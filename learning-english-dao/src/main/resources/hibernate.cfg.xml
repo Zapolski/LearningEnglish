@@ -15,6 +15,7 @@
         <property name="hibernate.current_session_context_class">thread</property>
 
         <mapping class="by.zapolski.english.domain.Word"/>
+        <mapping class="by.zapolski.english.domain.Rule"/>
     </session-factory>
 
 </hibernate-configuration>

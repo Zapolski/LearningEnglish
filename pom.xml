@@ -11,6 +11,10 @@
 
     <packaging>pom</packaging>
 
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
     <modules>
         <module>learning-english-web</module>
         <module>learning-english-dao</module>
