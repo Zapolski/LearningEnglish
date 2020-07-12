@@ -19,6 +19,8 @@
         <mapping class="by.zapolski.english.domain.Resource"/>
         <mapping class="by.zapolski.english.domain.Language"/>
         <mapping class="by.zapolski.english.domain.Context"/>
+        <mapping class="by.zapolski.english.domain.Translation"/>
+        <mapping class="by.zapolski.english.domain.Phrase"/>
     </session-factory>
 
 </hibernate-configuration>

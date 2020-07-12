@@ -3,7 +3,7 @@ package by.zapolski.english.domain;
 /**
  * Перечисления для хранения видов поддерживаемых хранилищ
  */
-public enum Storage {
+public enum StorageType {
 
     /**
      * Хранение трэка на файловой системе

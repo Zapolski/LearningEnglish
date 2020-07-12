@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Сущность для правила английского языка
@@ -23,6 +25,9 @@ public class Rule implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToMany(mappedBy = "rules")
+    private Set<Phrase> phrases = new HashSet<>();
 
     /**
      * Текстовое описание грамматического правила

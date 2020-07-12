@@ -21,11 +21,11 @@ public class Resource {
     private Long id;
 
     /**
-     * Тип хранилищиа {@link Storage}
+     * Тип хранилищиа {@link StorageType}
      */
-    @Column(nullable = false)
+    @Column(nullable = false, name = "storage_name")
     @Enumerated(EnumType.STRING)
-    private Storage storage;
+    private StorageType storageType;
 
     /**
      * Путь
