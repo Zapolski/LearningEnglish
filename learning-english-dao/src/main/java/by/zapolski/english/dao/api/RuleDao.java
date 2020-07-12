@@ -5,7 +5,9 @@ import by.zapolski.english.domain.Rule;
 import java.util.List;
 
 public interface RuleDao {
-    Rule findOne(long id);
+    Rule getById(long id);
+
+    Rule getByValue(String value);
 
     List<Rule> findAll();
 

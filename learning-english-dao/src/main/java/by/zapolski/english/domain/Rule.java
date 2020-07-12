@@ -3,22 +3,23 @@ package by.zapolski.english.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Сущность для правила английского языка
- *
+ * <p>
  * Каждый пример-фраза может "подчиняться" различным грамматическим правилам
  * Изучая грамматику можно выбрать примеры для конкретного правила-раздела грамматики
  */
 @Entity
 @Table
 @Data
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode(of = "value")
 @NoArgsConstructor
 public class Rule implements Serializable {
 
@@ -26,8 +27,9 @@ public class Rule implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(mappedBy = "rules")
-    private Set<Phrase> phrases = new HashSet<>();
+    @ManyToMany(mappedBy = "rules", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Phrase> phrases = new ArrayList<>();
 
     /**
      * Текстовое описание грамматического правила
@@ -35,4 +37,7 @@ public class Rule implements Serializable {
     @Column(nullable = false)
     private String value;
 
+    public Rule(String value) {
+        this.value = value;
+    }
 }

@@ -1,5 +1,6 @@
 package by.zapolski.english.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.io.Serializable;
 @Entity
 @Table
 @Data
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode(of = "value")
 @NoArgsConstructor
 public class Context implements Serializable {
 
@@ -29,4 +30,7 @@ public class Context implements Serializable {
     @Column(nullable = false)
     private String value;
 
+    public Context(String value) {
+        this.value = value;
+    }
 }

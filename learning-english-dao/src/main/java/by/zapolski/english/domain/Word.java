@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Table
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode(of = "value")
 public class Word implements Serializable {
 
     @Id
@@ -25,7 +25,7 @@ public class Word implements Serializable {
     /**
      * Слово
      */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String value;
 
     /**
@@ -34,4 +34,9 @@ public class Word implements Serializable {
      */
     @Column(nullable = false)
     private Integer rank;
+
+    public Word(String value, Integer rank) {
+        this.value = value;
+        this.rank = rank;
+    }
 }

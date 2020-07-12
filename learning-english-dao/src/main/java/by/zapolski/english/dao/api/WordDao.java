@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface WordDao {
 
-    Word findOne(long id);
+    Word getById(long id);
+
+    Word getByValue(String value);
+
+    List<Word> getByRank(Integer rank);
 
     List<Word> findAll();
 

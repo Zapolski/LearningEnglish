@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Сущность для хранания информации о файле-треке с произношением английской фразы
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(exclude = {"id"})
-public class Resource {
+public class Resource implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,5 +52,13 @@ public class Resource {
      * Длительность файла в милисекундах
      */
     @Column(nullable = false)
-    private Integer duration;
+    private Long duration;
+
+    public Resource(StorageType storageType, String path, Long size, String checksum, Long duration) {
+        this.storageType = storageType;
+        this.path = path;
+        this.size = size;
+        this.checksum = checksum;
+        this.duration = duration;
+    }
 }

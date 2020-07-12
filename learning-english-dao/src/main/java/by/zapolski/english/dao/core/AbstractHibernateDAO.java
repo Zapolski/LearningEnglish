@@ -1,4 +1,4 @@
-package by.zapolski.english.dao.api;
+package by.zapolski.english.dao.core;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,19 +12,19 @@ public class AbstractHibernateDAO<T extends Serializable> {
 
     private SessionFactory sessionFactory;
 
-    protected AbstractHibernateDAO(SessionFactory sessionFactory) {
+    AbstractHibernateDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
-    private Session getCurrentSession() {
+    Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
 
-    protected void setClazz(Class<T> clazzToSet) {
+    void setClazz(Class<T> clazzToSet) {
         clazz = clazzToSet;
     }
 
-    public T findOne(long id) {
+    public T getById(long id) {
         return getCurrentSession().get(clazz, id);
     }
 
@@ -47,7 +47,7 @@ public class AbstractHibernateDAO<T extends Serializable> {
     }
 
     public void deleteById(long id) {
-        final T entity = findOne(id);
+        final T entity = getById(id);
         delete(entity);
     }
 

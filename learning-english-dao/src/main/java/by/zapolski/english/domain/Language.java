@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Table
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode(of = "value")
 public class Language implements Serializable {
 
     @Id
@@ -27,4 +27,7 @@ public class Language implements Serializable {
     @Column(nullable = false)
     private String value;
 
+    public Language(String value) {
+        this.value = value;
+    }
 }
