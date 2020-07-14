@@ -16,4 +16,6 @@ public interface PhraseDao {
     void delete(Phrase entity);
 
     void deleteById(long id);
+
+    Long getCount();
 }

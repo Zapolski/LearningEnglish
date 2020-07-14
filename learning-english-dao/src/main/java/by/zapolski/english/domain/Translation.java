@@ -24,7 +24,7 @@ public class Translation implements Serializable {
 
     @ManyToOne (
             fetch = FetchType.LAZY,
-            cascade = CascadeType.PERSIST // при создании преревода для нового языка, язык должен попасть в БД
+            cascade = {CascadeType.PERSIST,CascadeType.REFRESH} // при создании переревода для нового языка, язык должен попасть в БД
     )
     @JoinColumn(name = "language_id")
     private Language language;
@@ -36,7 +36,10 @@ public class Translation implements Serializable {
     @ToString.Exclude
     private Phrase phrase;
 
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String value;
 
     public Translation(String value) {

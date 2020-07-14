@@ -24,7 +24,10 @@ public class Language implements Serializable {
     /**
      * Поддерживаемй язык, на котороый присутствует перевод
      */
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String value;
 
     public Language(String value) {

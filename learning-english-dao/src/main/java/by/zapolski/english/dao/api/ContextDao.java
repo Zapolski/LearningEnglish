@@ -18,4 +18,6 @@ public interface ContextDao {
     void delete(Context entity);
 
     void deleteById(long id);
+
+    Long getCount();
 }

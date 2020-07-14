@@ -16,4 +16,6 @@ public interface ResourceDao {
     void delete(Resource entity);
 
     void deleteById(long id);
+
+    Long getCount();
 }

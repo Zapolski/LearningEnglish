@@ -14,7 +14,7 @@ import java.io.Serializable;
 @Table
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"id"})
+@EqualsAndHashCode(of = {"id"})
 public class Resource implements Serializable {
 
     @Id

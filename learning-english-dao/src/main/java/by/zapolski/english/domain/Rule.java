@@ -34,7 +34,10 @@ public class Rule implements Serializable {
     /**
      * Текстовое описание грамматического правила
      */
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String value;
 
     public Rule(String value) {

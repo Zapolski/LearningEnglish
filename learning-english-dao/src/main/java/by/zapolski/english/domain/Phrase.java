@@ -27,7 +27,7 @@ public class Phrase implements Serializable {
      * Английское слово связанное с примером-фразой
      */
     @ManyToOne(
-            cascade = CascadeType.PERSIST // при создании фразы-примера с новым словом, слово должно попасть в БД
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH} // при создании фразы-примера с новым словом, слово должно попасть в БД
     )
     @JoinColumn(name = "word_id")
     private Word word;
@@ -45,7 +45,8 @@ public class Phrase implements Serializable {
      * Контекст-определение изучаемого слова в данной фразе-примере
      */
     @ManyToOne(
-            cascade = CascadeType.PERSIST // для нового контекста создается новая сущность
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH} // для нового контекста создается новая сущность
+
     )
     @JoinColumn(name = "context_id")
     private Context context;
@@ -75,7 +76,10 @@ public class Phrase implements Serializable {
     /**
      * Текстовое представление английской фразы-примера
      */
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String value;
 
     /**

@@ -75,4 +75,26 @@ public class WordDaoTest extends TestBase {
         assertEquals(2, actualWords.size());
     }
 
+    @Test
+    public void getCountTest() {
+        Transaction transaction = sessionFactory.getCurrentSession().beginTransaction();
+        wordDao.save(testWord);
+        transaction.commit();
+
+        testWord = new Word();
+        testWord.setValue("word");
+        testWord.setRank(500);
+
+        transaction = sessionFactory.getCurrentSession().beginTransaction();
+        wordDao.save(testWord);
+        transaction.commit();
+
+        transaction = sessionFactory.getCurrentSession().beginTransaction();
+        Long actualCount = wordDao.getCount();
+        transaction.commit();
+
+        assertEquals(Long.valueOf(2L),actualCount);
+
+    }
+
 }

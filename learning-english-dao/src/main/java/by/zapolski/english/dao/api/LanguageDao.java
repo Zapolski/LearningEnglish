@@ -18,4 +18,6 @@ public interface LanguageDao {
     void delete(Language entity);
 
     void deleteById(long id);
+
+    Long getCount();
 }

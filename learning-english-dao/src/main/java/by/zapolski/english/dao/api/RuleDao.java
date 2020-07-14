@@ -18,4 +18,6 @@ public interface RuleDao {
     void delete(Rule entity);
 
     void deleteById(long id);
+
+    Long getCount();
 }

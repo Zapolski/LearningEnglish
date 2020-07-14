@@ -7,6 +7,8 @@ import java.util.List;
 public interface TranslationDao {
     Translation getById(long id);
 
+    Translation getByValue(String value);
+
     List<Translation> findAll();
 
     void save(Translation entity);
@@ -16,4 +18,6 @@ public interface TranslationDao {
     void delete(Translation entity);
 
     void deleteById(long id);
+
+    Long getCount();
 }

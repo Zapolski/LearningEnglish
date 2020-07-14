@@ -1,6 +1,5 @@
 package by.zapolski.english.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,10 @@ public class Context implements Serializable {
     /**
      * Текстовое описание контекста-определения изучаемого слова на английском языке
      */
-    @Column(nullable = false)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String value;
 
     public Context(String value) {

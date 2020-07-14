@@ -1,5 +1,6 @@
 package by.zapolski.english.dao.core;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -50,5 +51,12 @@ public class AbstractHibernateDAO<T extends Serializable> {
         final T entity = getById(id);
         delete(entity);
     }
+
+    public Long getCount(){
+        Query query = getCurrentSession().createQuery("select count(*) from "+clazz.getName());
+        return (Long) query.uniqueResult();
+    }
+
+
 
 }

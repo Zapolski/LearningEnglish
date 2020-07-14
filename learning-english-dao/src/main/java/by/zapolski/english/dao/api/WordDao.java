@@ -22,4 +22,6 @@ public interface WordDao {
 
     void deleteById(long id);
 
+    Long getCount();
+
 }

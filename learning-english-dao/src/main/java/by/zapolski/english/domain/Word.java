@@ -25,7 +25,10 @@ public class Word implements Serializable {
     /**
      * Слово
      */
-    @Column(nullable = false, unique = true)
+    @Column(
+            nullable = false,
+            unique = true
+    )
     private String value;
 
     /**
