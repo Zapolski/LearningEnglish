@@ -17,32 +17,34 @@
         <apache.poi.version>3.12</apache.poi.version>
         <log4j.version>2.4.1</log4j.version>
         <org.hibernate.version>5.1.0.Final</org.hibernate.version>
+        <spring.version>2.2.6.RELEASE</spring.version>
+
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <modules>
         <module>learning-english-web</module>
-        <module>learning-english-dao</module>
+        <!--<module>learning-english-dao</module>-->
         <module>learning-english-entity</module>
         <module>learning-english-db-service</module>
         <module>learning-english-dto</module>
+        <module>learning-english-repo</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
 
+            <!-- т.к. мы имеем собственного родителя для всех модулей,
+            чтобы spring-boot-starter понимал где ему брать зависимости-->
             <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${org.hibernate.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-java8</artifactId>
-                <version>${org.hibernate.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <type>pom</type>
+                <version>${spring.version}</version>
+                <scope>import</scope>
             </dependency>
 
             <dependency>

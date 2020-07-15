@@ -15,6 +15,9 @@ public class PhraseWithTranslationDto {
 
     private String resourcePath;
     private String resourceStorageType;
+    private Long resourceSize;
+    private String resourceChecksum;
+    private Long resourceDuration;
 
     private String contextValue;
 
