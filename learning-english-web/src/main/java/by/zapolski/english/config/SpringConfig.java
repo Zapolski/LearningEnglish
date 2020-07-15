@@ -2,7 +2,7 @@ package by.zapolski.english.config;
 
 import by.zapolski.english.dao.api.WordDao;
 import by.zapolski.english.dao.core.WordDaoImpl;
-import by.zapolski.english.utils.HibernateUtils;
+import by.zapolski.english.dao.utils.HibernateUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
