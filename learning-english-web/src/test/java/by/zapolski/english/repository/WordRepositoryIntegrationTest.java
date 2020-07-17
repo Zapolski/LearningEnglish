@@ -1,6 +1,5 @@
 package by.zapolski.english.repository;
 
-import by.zapolski.english.WordRepository;
 import by.zapolski.english.domain.Word;
 import org.junit.Before;
 import org.junit.Test;

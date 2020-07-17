@@ -27,11 +27,8 @@
 
     <modules>
         <module>learning-english-web</module>
-        <!--<module>learning-english-dao</module>-->
         <module>learning-english-entity</module>
-        <module>learning-english-db-service</module>
         <module>learning-english-dto</module>
-        <module>learning-english-repo</module>
     </modules>
 
     <dependencyManagement>

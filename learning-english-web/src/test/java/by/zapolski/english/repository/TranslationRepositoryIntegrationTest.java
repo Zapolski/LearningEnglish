@@ -1,6 +1,5 @@
 package by.zapolski.english.repository;
 
-import by.zapolski.english.TranslationRepository;
 import by.zapolski.english.domain.Translation;
 import org.junit.Before;
 import org.junit.Test;

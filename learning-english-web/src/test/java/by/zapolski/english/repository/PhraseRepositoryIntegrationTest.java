@@ -1,6 +1,5 @@
 package by.zapolski.english.repository;
 
-import by.zapolski.english.PhraseRepository;
 import by.zapolski.english.domain.Phrase;
 import org.junit.Before;
 import org.junit.Test;

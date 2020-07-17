@@ -77,7 +77,8 @@ public class Phrase implements Serializable {
      * Текстовое представление английской фразы-примера
      */
     @Column(
-            nullable = false
+            nullable = false,
+            length = 500
     )
     private String value;
 

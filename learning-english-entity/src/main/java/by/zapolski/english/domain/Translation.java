@@ -38,7 +38,7 @@ public class Translation implements Serializable {
 
     @Column(
             nullable = false,
-            unique = true
+            length = 500
     )
     private String value;
 

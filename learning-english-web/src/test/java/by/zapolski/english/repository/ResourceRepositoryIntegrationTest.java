@@ -1,6 +1,5 @@
 package by.zapolski.english.repository;
 
-import by.zapolski.english.ResourceRepository;
 import by.zapolski.english.domain.Resource;
 import by.zapolski.english.domain.StorageType;
 import org.junit.Before;

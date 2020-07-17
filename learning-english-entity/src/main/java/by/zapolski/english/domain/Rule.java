@@ -36,7 +36,8 @@ public class Rule implements Serializable {
      */
     @Column(
             nullable = false,
-            unique = true
+            unique = true,
+            length = 500
     )
     private String value;
 
