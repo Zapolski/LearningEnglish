@@ -1,4 +1,4 @@
-package by.zapolski.english.dto;
+package by.zapolski.english.service.core.loader;
 
 import lombok.Data;
 

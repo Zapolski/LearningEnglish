@@ -46,7 +46,6 @@ public class Phrase implements Serializable {
      */
     @ManyToOne(
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH} // для нового контекста создается новая сущность
-
     )
     @JoinColumn(name = "context_id")
     private Context context;
@@ -65,7 +64,8 @@ public class Phrase implements Serializable {
      * Список грамматических правил, которым подчинается фраза-пример
      */
     @ManyToMany(
-            cascade = CascadeType.PERSIST // для нового правила создается новая сущность
+            cascade = CascadeType.PERSIST, // для нового правила создается новая сущность
+            fetch = FetchType.LAZY
     )
     @JoinTable(
             name = "phrase_rule",

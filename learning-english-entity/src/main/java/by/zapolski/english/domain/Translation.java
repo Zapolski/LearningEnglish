@@ -23,7 +23,7 @@ public class Translation implements Serializable {
     private Long id;
 
     @ManyToOne (
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST,CascadeType.REFRESH} // при создании переревода для нового языка, язык должен попасть в БД
     )
     @JoinColumn(name = "language_id")

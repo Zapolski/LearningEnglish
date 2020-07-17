@@ -1,4 +1,4 @@
-package by.zapolski.english.service;
+package by.zapolski.english.service.api;
 
 import org.springframework.stereotype.Service;
 
