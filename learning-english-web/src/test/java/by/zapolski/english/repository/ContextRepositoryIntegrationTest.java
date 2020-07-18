@@ -1,6 +1,7 @@
 package by.zapolski.english.repository;
 
-import by.zapolski.english.domain.Context;
+import by.zapolski.english.learning.domain.Context;
+import by.zapolski.english.repository.learning.ContextRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

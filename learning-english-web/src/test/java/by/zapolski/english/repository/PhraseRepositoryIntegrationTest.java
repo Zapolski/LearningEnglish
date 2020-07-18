@@ -1,6 +1,7 @@
 package by.zapolski.english.repository;
 
-import by.zapolski.english.domain.Phrase;
+import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.repository.learning.PhraseRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
