@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Table
 @Entity
@@ -18,12 +19,15 @@ public class Dictionary {
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Value is mandatory!")
     private String value;
 
     @Column(nullable = false)
+    @NotBlank(message = "Rank is mandatory!")
     private Integer rank;
 
     @Column(nullable = false)
+    @NotBlank(message = "Part of speech is mandatory!")
     private Character partOfSpeech;
 
     public Dictionary(String value, Integer rank, Character partOfSpeech) {

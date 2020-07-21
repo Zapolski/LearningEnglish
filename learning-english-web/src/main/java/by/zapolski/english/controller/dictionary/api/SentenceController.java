@@ -1,4 +1,4 @@
-package by.zapolski.english.controller.dictionary;
+package by.zapolski.english.controller.dictionary.api;
 
 import by.zapolski.english.dictionary.dto.SentenceInfoDto;
 import by.zapolski.english.service.dictionary.api.SentenceService;

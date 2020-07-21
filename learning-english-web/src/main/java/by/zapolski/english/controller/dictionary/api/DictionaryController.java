@@ -1,4 +1,4 @@
-package by.zapolski.english.controller.dictionary;
+package by.zapolski.english.controller.dictionary.api;
 
 import by.zapolski.english.dictionary.domain.Dictionary;
 import by.zapolski.english.dictionary.dto.DictionaryDto;
@@ -20,7 +20,7 @@ public class DictionaryController {
     @Autowired
     private DictionaryService dictionaryService;
 
-    @GetMapping("dictionary/frequency")
+    @GetMapping("api/dictionary/search")
     public List<DictionaryWithSimilarityDto> getSimilarWordsWithAccuracyThreshold(
             @RequestParam String word,
             @RequestParam Integer threshold
@@ -28,7 +28,7 @@ public class DictionaryController {
         return dictionaryService.getSimilarWordsWithAccuracyThreshold(word, threshold);
     }
 
-    @PostMapping("dictionary/create")
+    @PostMapping("api/dictionary/create")
     public DictionaryDto create(@RequestBody DictionaryDto dictionaryDto) {
 
         Dictionary dictionary = dictionaryService.save(dictionaryDto);

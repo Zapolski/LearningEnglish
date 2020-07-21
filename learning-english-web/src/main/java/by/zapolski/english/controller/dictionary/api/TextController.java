@@ -1,4 +1,4 @@
-package by.zapolski.english.controller.dictionary;
+package by.zapolski.english.controller.dictionary.api;
 
 import by.zapolski.english.service.dictionary.api.TextService;
 import org.springframework.beans.factory.annotation.Autowired;

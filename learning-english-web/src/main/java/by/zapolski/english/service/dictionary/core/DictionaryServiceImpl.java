@@ -31,16 +31,14 @@ public class DictionaryServiceImpl implements DictionaryService {
         List<DictionaryWithSimilarityDto> result = new ArrayList<>();
         JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
 
-        log.info("Loading dictionary to memory...");
         List<Dictionary> wordList = dictionaryRepository.findAll();
 
-        log.info("Looking for similar words...");
         for (Dictionary dictionary : wordList) {
-            //log.info("Calculate similarity [{}] with [{}]",word, dictionary.getValue());
             Double currentThreshold = jaroWinklerSimilarity.apply(word, dictionary.getValue()) * 100;
 
+            currentThreshold = Math.round(currentThreshold * 10d) / 10d;
+
             if (currentThreshold >= threshold) {
-                log.info("----> Similarity fits. Create object for response.");
                 DictionaryWithSimilarityDto dictionaryWithSimilarityDto = new DictionaryWithSimilarityDto();
 
                 dictionaryWithSimilarityDto.setSimilarity(currentThreshold);
