@@ -16,7 +16,7 @@
 
 <body>
     <div class="container my-3">
-        <form action="#" th:action="@{/dictionary/update}" th:object="${lemma}" method="post">
+        <form action="#" th:action="@{/dictionary/update/{id}(id=${lemma.id})}" th:object="${lemma}" method="post">
             <h4 class="my-5">Update lemma in dictionary:</h4>
             <div>
                 <label for="value">Word: </label>

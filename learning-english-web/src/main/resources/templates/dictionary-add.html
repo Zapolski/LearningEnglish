@@ -18,6 +18,7 @@
     <div class="container my-3">
         <form action="#" th:action="@{/dictionary/add}" th:object="${lemma}" method="post">
             <h4 class="my-5">Add new lemma to dictionary:</h4>
+            <p><span th:text="${messageResult}">[adding status]</span></p>
             <div>
                 <label for="value">Word: </label>
                 <input type="text" th:field="*{value}" id="value" placeholder="Word" />

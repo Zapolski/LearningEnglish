@@ -169,11 +169,12 @@ table.table .avatar {
                         <td th:text="${lemma.partOfSpeech}"></td>
                         <td th:text="${lemma.similarity}"></td>
                         <td>
-                            <a th:href="@{/dictionary/edit/{id}(id=${lemma.id})}" class="edit" data-toggle="modal"><i
-                                    class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                            <a th:href="@{/dictionary/delete/{id}(id=${lemma.id})}" class="delete"
-                               data-toggle="modal"><i
-                                    class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                            <a th:href="@{/dictionary/edit/{id}(id=${lemma.id})}" class="edit">
+                                <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                            </a>
+                            <a th:href="@{/dictionary/delete/{id}(id=${lemma.id})}" class="delete">
+                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                            </a>
                         </td>
                     </tr>
                     </tbody>

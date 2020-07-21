@@ -58,8 +58,27 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public Dictionary save(DictionaryDto dictionaryDto) {
+    public DictionaryDto save(DictionaryDto dictionaryDto) {
         Dictionary dictionary = dictionaryMapper.dtoToDictionary(dictionaryDto);
-        return dictionaryRepository.save(dictionary);
+        dictionaryRepository.save(dictionary);
+        return dictionaryMapper.dictionaryToDto(dictionary);
     }
+
+    @Override
+    public void delete(DictionaryDto dictionaryDto) {
+        Dictionary dictionary = dictionaryMapper.dtoToDictionary(dictionaryDto);
+        dictionaryRepository.delete(dictionary);
+    }
+
+    @Override
+    public void deleteById(Long id){
+        dictionaryRepository.deleteById(id);
+    }
+
+    @Override
+    public DictionaryDto getById(Long id) {
+        Dictionary dictionary = dictionaryRepository.getOne(id);
+        return dictionaryMapper.dictionaryToDto(dictionary);
+    }
+
 }

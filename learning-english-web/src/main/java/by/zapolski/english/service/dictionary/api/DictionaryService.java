@@ -1,6 +1,5 @@
 package by.zapolski.english.service.dictionary.api;
 
-import by.zapolski.english.dictionary.domain.Dictionary;
 import by.zapolski.english.dictionary.dto.DictionaryDto;
 import by.zapolski.english.dictionary.dto.DictionaryWithSimilarityDto;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,11 @@ public interface DictionaryService {
      */
     List<DictionaryWithSimilarityDto> getSimilarWordsWithAccuracyThreshold(String word, Integer threshold);
 
-    Dictionary save(DictionaryDto wordWithFrequency);
+    DictionaryDto save(DictionaryDto wordWithFrequency);
 
+    void delete(DictionaryDto dictionaryDto);
+
+    void deleteById(Long id);
+
+    DictionaryDto getById(Long id);
 }
