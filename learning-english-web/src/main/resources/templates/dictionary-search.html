@@ -4,7 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Search results</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -12,25 +14,91 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/dictionary.css">
 </head>
 
 <body>
-    <div class="container my-3">
-        <form action="#" th:action="@{/dictionary/search}" th:object="${searchRequest}" method="post">
-            <h4 class="my-5">Search lemmas by value and similarity threshold:</h4>
-            <div>
-                <label for="word">Word</label>
-                <input type="text" th:field="*{word}" id="word" placeholder="Word" />
-                <span th:if="${#fields.hasErrors('word')}" th:errors="*{word}"></span>
-            </div>
-            <div>
-                <label for="threshold">Similarity threshold</label>
-                <input type="text" th:field="*{threshold}" id="threshold" placeholder="Similiarity threshold" />
-                <span th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}"></span>
-            </div>
-            <input type="submit" value="Search">
-        </form>
+
+<div class="container-xl">
+    <form action="#" th:action="@{/dictionary/search}" th:object="${searchRequest}" method="post">
+        <h4 class="my-3">Search lemmas by value and similarity threshold</h4>
+        <div>
+            <label for="word">Word</label>
+            <input type="text" th:field="*{word}" id="word" placeholder="Word" />
+            <span th:if="${#fields.hasErrors('word')}" th:errors="*{word}"></span>
+        </div>
+        <div>
+            <label for="threshold">Similarity threshold</label>
+            <input type="text" th:field="*{threshold}" id="threshold" placeholder="Similarity threshold" />
+            <span th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}"></span>
+        </div>
+        <input type="submit" value="Search">
+    </form>
+
+    <p></p>
+    <form action="#" th:action="@{/dictionary/search/rank}" method="post">
+        <div>
+            <label for="rank">Rank</label>
+            <input type="text" id="rank" th:name="rank" placeholder="Rank" />
+            <input type="submit" value="Search by rank">
+        </div>
+    </form>
+</div>
+
+<div th:switch="${#lists.size(lemmas)}" class="container-xl">
+
+    <p></p>
+    <div th:case="0">
+        <p>Found records: <span th:text="${#lists.size(lemmas)}">[Number of Elements]</span></p>
     </div>
+    <div th:case="*">
+        <p>Found records: <span th:text="${#lists.size(lemmas)}">[Number of Elements]</span></p>
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2>Search result list</h2>
+                        </div>
+                        <div class="col-sm-6">
+                            <a href="/dictionary/add" class="btn btn-success">
+                                <i class="material-icons">&#xE147;</i><span>Add New Lemma</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Value</th>
+                        <th>Rank</th>
+                        <th>PoS</th>
+                        <th>Similarity, %</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lemma : ${lemmas}">
+                        <td th:text="${lemma.value}"></td>
+                        <td th:text="${lemma.rank}"></td>
+                        <td th:text="${lemma.partOfSpeech}"></td>
+                        <td th:text="${lemma.similarity}"></td>
+                        <td>
+                            <a th:href="@{/dictionary/edit/{id}(id=${lemma.id})}" class="edit">
+                                <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                            </a>
+                            <a th:href="@{/dictionary/delete/{id}(id=${lemma.id})}" class="delete">
+                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

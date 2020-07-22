@@ -81,4 +81,12 @@ public class DictionaryServiceImpl implements DictionaryService {
         return dictionaryMapper.dictionaryToDto(dictionary);
     }
 
+    @Override
+    public List<DictionaryDto> getByRank(Integer rank) {
+        List<Dictionary> result = dictionaryRepository.getByRank(rank);
+        return result.stream()
+                .map(dictionary -> dictionaryMapper.dictionaryToDto(dictionary))
+                .collect(Collectors.toList());
+    }
+
 }

@@ -28,4 +28,6 @@ public interface DictionaryService {
     void deleteById(Long id);
 
     DictionaryDto getById(Long id);
+
+    List<DictionaryDto> getByRank(Integer rank);
 }

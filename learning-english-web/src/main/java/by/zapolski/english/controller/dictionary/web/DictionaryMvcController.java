@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @Log4j2
@@ -25,14 +28,16 @@ public class DictionaryMvcController {
     DictionaryService dictionaryService;
 
     @GetMapping("/dictionary/search")
-    public String search(Model model) {
-        SearchDictionaryRequest searchDictionaryRequest = new SearchDictionaryRequest();
-        model.addAttribute("searchRequest", searchDictionaryRequest);
+    public String search(
+            @ModelAttribute("searchRequest") SearchDictionaryRequest searchDictionaryRequest,
+            @ModelAttribute("lemmas") ArrayList<DictionaryWithSimilarityDto> lemmas,
+            Model model) {
         return "dictionary-search";
     }
 
     @PostMapping("/dictionary/search")
     public String showSearchResult(
+            @ModelAttribute("lemmas") ArrayList<DictionaryWithSimilarityDto> lemmas,
             @ModelAttribute("searchRequest") @Valid SearchDictionaryRequest searchRequest,
             BindingResult bindingResult,
             Model model
@@ -40,20 +45,37 @@ public class DictionaryMvcController {
         if (bindingResult.hasErrors()) {
             return "dictionary-search";
         }
-        model.addAttribute("searchRequest", searchRequest);
+
         List<DictionaryWithSimilarityDto> result =
                 dictionaryService.getSimilarWordsWithAccuracyThreshold(
                         searchRequest.getWord(),
                         searchRequest.getThreshold());
 
         model.addAttribute("lemmas", result);
-        return "dictionary-list";
+        return "dictionary-search";
+    }
+
+    @PostMapping("/dictionary/search/rank")
+    public String showSearchResultByRank(
+            @ModelAttribute("rank") String rank,
+            @ModelAttribute("searchRequest") SearchDictionaryRequest searchRequest,
+            Model model
+    ) {
+        List<DictionaryDto> dtoList = dictionaryService.getByRank(Integer.valueOf(rank));
+        List<DictionaryWithSimilarityDto> result = dtoList.stream()
+                .map(d -> new DictionaryWithSimilarityDto(d.getId(),d.getValue(),d.getRank(),d.getPartOfSpeech(),100d))
+                .collect(Collectors.toList());
+
+
+        model.addAttribute("lemmas", result);
+        return "dictionary-search";
     }
 
     @GetMapping("/dictionary/add")
-    public String add(Model model) {
-        DictionaryDto dictionaryDto = new DictionaryDto();
-        model.addAttribute("lemma", dictionaryDto);
+    public String add(
+            @ModelAttribute("lemma") DictionaryDto dictionaryDto,
+            Model model
+    ) {
         return "dictionary-add";
     }
 
@@ -67,9 +89,14 @@ public class DictionaryMvcController {
             return "dictionary-add";
         }
         dictionaryService.save(dictionaryDto);
-        model.addAttribute("lemma", new DictionaryDto());
-        model.addAttribute("messageResult", "Object was added.");
-        return "dictionary-add";
+
+        List<DictionaryWithSimilarityDto> result =
+                dictionaryService.getSimilarWordsWithAccuracyThreshold(dictionaryDto.getValue(), 100);
+        SearchDictionaryRequest searchRequest = new SearchDictionaryRequest(dictionaryDto.getValue(), 100);
+
+        model.addAttribute("lemmas", result);
+        model.addAttribute("searchRequest", searchRequest);
+        return "dictionary-search";
     }
 
     @GetMapping("/dictionary/edit/{id}")
@@ -90,23 +117,40 @@ public class DictionaryMvcController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("lemma",dictionaryDto);
             return "dictionary-update";
         }
+
         dictionaryDto.setId(id);
-        DictionaryDto newDictionaryDto =  dictionaryService.save(dictionaryDto);
-        log.info("Out: ",dictionaryDto.toString());
-        model.addAttribute("lemma", newDictionaryDto);
-        return "dictionary-update";
+        DictionaryDto newDictionaryDto = dictionaryService.save(dictionaryDto);
+
+        List<DictionaryWithSimilarityDto> result =
+                dictionaryService.getSimilarWordsWithAccuracyThreshold(newDictionaryDto.getValue(), 100);
+        SearchDictionaryRequest searchRequest = new SearchDictionaryRequest(newDictionaryDto.getValue(), 100);
+
+        model.addAttribute("lemmas", result);
+        model.addAttribute("searchRequest", searchRequest);
+
+        return "dictionary-search";
     }
 
+    //
     @GetMapping("/dictionary/delete/{id}")
     public String delete(
             @PathVariable("id") long id,
             Model model
     ) {
+
+        DictionaryDto dictionaryDto = dictionaryService.getById(id);
         dictionaryService.deleteById(id);
-        return "redirect:/dictionary/search";
+
+        List<DictionaryWithSimilarityDto> result =
+                dictionaryService.getSimilarWordsWithAccuracyThreshold(dictionaryDto.getValue(), 100);
+        SearchDictionaryRequest searchRequest = new SearchDictionaryRequest(dictionaryDto.getValue(), 100);
+
+        model.addAttribute("lemmas", result);
+        model.addAttribute("searchRequest", searchRequest);
+
+        return "dictionary-search";
     }
 
 }

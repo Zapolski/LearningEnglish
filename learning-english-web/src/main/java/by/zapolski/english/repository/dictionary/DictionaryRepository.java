@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
     List<Dictionary> findByValue(String value);
+
+    List<Dictionary> getByRank(Integer rank);
 }
