@@ -15,14 +15,14 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="/css/dictionary.css">
 </head>
 
 <body>
 
 <div class="container-xl">
+    <h4 class="my-3">Search lemmas by value and similarity threshold or by rank</h4>
+
     <form action="#" th:action="@{/dictionary/search}" th:object="${searchRequest}" method="post">
-        <h4 class="my-3">Search lemmas by value and similarity threshold</h4>
         <div>
             <label for="word">Word</label>
             <input type="text" th:field="*{word}" id="word" placeholder="Word" />
@@ -33,7 +33,7 @@
             <input type="text" th:field="*{threshold}" id="threshold" placeholder="Similarity threshold" />
             <span th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}"></span>
         </div>
-        <input type="submit" value="Search">
+        <input type="submit" value="Search by value and similarity threshold">
     </form>
 
     <p></p>
@@ -41,8 +41,8 @@
         <div>
             <label for="rank">Rank</label>
             <input type="text" id="rank" th:name="rank" placeholder="Rank" />
-            <input type="submit" value="Search by rank">
         </div>
+        <input type="submit" value="Search by rank">
     </form>
 </div>
 
@@ -88,7 +88,7 @@
                             <a th:href="@{/dictionary/edit/{id}(id=${lemma.id})}" class="edit">
                                 <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                             </a>
-                            <a th:href="@{/dictionary/delete/{id}(id=${lemma.id})}" class="delete">
+                            <a th:href="@{/dictionary/delete/{id}(id=${lemma.id})}" class="delete" id="deleteButton">
                                 <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
                             </a>
                         </td>
@@ -99,6 +99,33 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Modal HTML -->
+<div id="deleteLemmaModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Lemma</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this record?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <a href="" class="btn btn-danger" id="delRef">Delete</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 </body>
+
+<script src="/js/dictionary.js"></script>
+<link rel="stylesheet" href="/css/dictionary.css">
 
 </html>

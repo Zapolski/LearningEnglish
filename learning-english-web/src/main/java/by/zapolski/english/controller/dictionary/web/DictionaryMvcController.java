@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +62,7 @@ public class DictionaryMvcController {
     ) {
         List<DictionaryDto> dtoList = dictionaryService.getByRank(Integer.valueOf(rank));
         List<DictionaryWithSimilarityDto> result = dtoList.stream()
-                .map(d -> new DictionaryWithSimilarityDto(d.getId(),d.getValue(),d.getRank(),d.getPartOfSpeech(),100d))
+                .map(d -> new DictionaryWithSimilarityDto(d.getId(), d.getValue(), d.getRank(), d.getPartOfSpeech(), 100d))
                 .collect(Collectors.toList());
 
 
