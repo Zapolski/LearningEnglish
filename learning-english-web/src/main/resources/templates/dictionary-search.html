@@ -30,17 +30,18 @@
         </div>
         <div>
             <label for="threshold">Similarity threshold</label>
-            <input type="text" th:field="*{threshold}" id="threshold" placeholder="Similarity threshold" />
+            <input type="number" th:field="*{threshold}" id="threshold" placeholder="Similarity threshold" />
             <span th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}"></span>
         </div>
         <input type="submit" value="Search by value and similarity threshold">
     </form>
 
     <p></p>
-    <form action="#" th:action="@{/dictionary/search/rank}" method="post">
+    <form action="#" th:action="@{/dictionary/search/rank}" th:object="${searchDictionaryRequestByRank}" method="post">
         <div>
             <label for="rank">Rank</label>
-            <input type="text" id="rank" th:name="rank" placeholder="Rank" />
+            <input type="number" id="rank" th:field="*{rank}" placeholder="Rank" />
+            <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
         </div>
         <input type="submit" value="Search by rank">
     </form>
@@ -88,7 +89,7 @@
                             <a th:href="@{/dictionary/edit/{id}(id=${lemma.id})}" class="edit">
                                 <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                             </a>
-                            <a th:href="@{/dictionary/delete/{id}(id=${lemma.id})}" class="delete" id="deleteButton">
+                            <a th:href="@{/dictionary/delete(id=${lemma.id},word=${searchRequest.word},threshold=${searchRequest.threshold},rank=${searchDictionaryRequestByRank.rank})}" class="delete" id="deleteButton">
                                 <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
                             </a>
                         </td>
@@ -122,6 +123,39 @@
     </div>
 </div>
 
+<!--<div id="addLemmaModal" class="modal fade">-->
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<form action="#" th:action="@{/dictionary/add}" th:object="${lemma}" method="post">-->
+                <!--<div class="modal-header">-->
+                    <!--<h4 class="modal-title">Add Lemma</h4>-->
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+                <!--</div>-->
+                <!--<div class="modal-body">-->
+                    <!--<div class="form-group">-->
+                        <!--<label for="value">Word: </label>-->
+                        <!--<input type="text" th:field="*{value}" id="value" placeholder="Word" class="form-control" required/>-->
+                        <!--<span th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></span>-->
+                    <!--</div>-->
+                    <!--<div class="form-group">-->
+                        <!--<label for="rank">Rank: </label>-->
+                        <!--<input type="text" th:field="*{rank}" id="rank" placeholder="Rank" class="form-control" required/>-->
+                        <!--<span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>-->
+                    <!--</div>-->
+                    <!--<div class="form-group">-->
+                        <!--<label for="partOfSpeech">Part of speech: </label>-->
+                        <!--<input type="text" th:field="*{partOfSpeech}" id="partOfSpeech" placeholder="Part of speech" class="form-control" required/>-->
+                        <!--<span th:if="${#fields.hasErrors('partOfSpeech')}" th:errors="*{partOfSpeech}"></span>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">-->
+                    <!--<input type="submit" class="btn btn-success" value="Add">-->
+                <!--</div>-->
+            <!--</form>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
 </body>
 
