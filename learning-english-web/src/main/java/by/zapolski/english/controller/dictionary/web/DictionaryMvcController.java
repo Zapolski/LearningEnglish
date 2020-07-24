@@ -88,6 +88,7 @@ public class DictionaryMvcController {
 
     @PostMapping("/dictionary/add")
     public String addPost(
+            @ModelAttribute("searchRequest") SearchDictionaryRequest searchDictionaryRequest,
             @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
             @ModelAttribute("lemma") @Valid DictionaryDto dictionaryDto,
             BindingResult bindingResult,
@@ -119,6 +120,8 @@ public class DictionaryMvcController {
 
     @PostMapping("/dictionary/update/{id}")
     public String update(
+            @ModelAttribute("searchRequest") SearchDictionaryRequest searchDictionaryRequest,
+            @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
             @PathVariable("id") Long id,
             @ModelAttribute("lemma") @Valid DictionaryDto dictionaryDto,
             BindingResult bindingResult,
