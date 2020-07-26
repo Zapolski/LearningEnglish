@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @Configuration
-public class NLPConfiguration {
+public class NLPConfig {
 
     @Bean
     public SentenceDetectorME getSentenceDetectorME() throws IOException {

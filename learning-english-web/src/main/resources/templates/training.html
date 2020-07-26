@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <title>English phrases</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <link href="css/training-style.css" rel="stylesheet">
+    <link href="css/training-sidenav.css" rel="stylesheet">
+</head>
+
+<body style="display: none;" data-bind="visible: true" onLoad="display()">
+
+    <div class="sidenav">
+        <span>Set words:</span>
+        <textarea id="set-text-area" class="set-text-area" data-bind="textInput: setWords" rows="15"
+            cols="25"></textarea>
+        <div class="set-controls">
+            <input data-bind="click: clearSetClick" type="button" value="Clear">
+            <input data-bind="click: loadSet" type="button" value="Load set"><br>
+        </div>
+    </div>
+
+    <div class="main">
+        <section id="content">
+
+            <form class="center" name="clockform">
+                <input name="clock" size=7 value="00:00:00.000">
+                <input name="clearer" type="button" value="Clear" onclick="swreset()">
+                <input name="starter" type="button" value="Play/Pause" onclick="startstop()">
+            </form>
+
+
+            <br><br>
+            <h2 class="center">Training English phrases with native speakers</h2>
+
+            <div class="center">
+                <label>Available languages for translation: </label>
+                <input id="languageInput" data-bind="value: languageString" type="text" list="languagesList">
+                <datalist id="languagesList" data-bind="foreach: availableLanguages">
+                    <option data-bind="value: $data"></option>
+                </datalist>
+            </div>
+            <br>
+
+            <form class="center" data-bind="submit: loadRecordByWord">
+                <label>Request string: </label>
+                <input id="wordInput" data-bind="value: searchString" type="text" list="wordList">
+                <datalist id="wordList" data-bind="foreach: availableWords">
+                    <option data-bind="value: $data"></option>
+                </datalist>
+                <input data-bind="click: clearButtonClick" type="button" value="Clear">
+                <input type="submit" value="Load word">
+                <input data-bind="click: addWordToSet" type="button" value="Add to set">
+
+                <br>
+                <label><input name="searchType" type="radio" value="0"
+                        data-bind="checked: radioSelectedOptionValue" />use
+                    search with database references</label>
+                <label><input name="searchType" type="radio" value="1"
+                        data-bind="checked: radioSelectedOptionValue" />use
+                    full search by sentences</label>
+                <br>
+                <label data-bind="visible: radioSelectedOptionValue() == 1"><input type="checkbox"
+                        data-bind="checked: isUseCaseSensitiveSearch, visible: radioSelectedOptionValue() == 1" />case
+                    sensitive</label>
+                <label><input type="checkbox" data-bind="checked: isShuffle" />shuffle</label>
+                <br>
+                <label>Min rank: </label>
+                <input id="minRank" data-bind="value: minRank" type="number">
+                <label>Max rank: </label>
+                <input id="maxRank" data-bind="value: maxRank" type="number">
+
+
+                <br><br>
+                <span>Available examples: </span>
+                <span data-bind="text: getCountVisiblePhrases()"></span>
+            </form><br><br>
+
+
+            <table class="table-sentences">
+                <tbody data-bind="foreach: records">
+                    <tr data-bind="visible: $data.visible()">
+                        <td class="center">
+                            <span data-bind="text: '№:' + ($index()+1)"></span><br>
+                            <input data-bind="event: {change: $parent.showQuestionCheckboxChange}" class="show_question"
+                                type="checkbox"><br>
+                            <span data-bind="text: 'Id:' + $data.id()"></span><br>
+                            <span data-bind="text: 'R:' + $data.rank()"></span>
+                        </td>
+                        <td>
+                            <span data-bind="attr: {tabindex: ($index() + 100001), data_title: $data.context()}"
+                                class='support question_hidden' data-title=''>
+                                <em>?</em>
+                            </span>
+                            <span data-bind="text: $parent.getTranslationWithFirstUpperLetter($data.translation())"
+                                class="question question_hidden"></span>
+                            <input data-bind="event: {keyup: $parent.inputFiledKeyUp}, attr: {tabindex: ($index() + 1)}"
+                                class='input-field' type="text" placeholder="Enter translation">
+                            <span
+                                data-bind="html: $parent.getEnglishWihtNamesHintsAndFirstUpper($data.english())"></span><br>
+                            <div class='check'></div>
+
+                            <button
+                                data-bind="click: $data.mode() === 'edit' ? $parent.hideEditor : $parent.showEditor">Show/Hide
+                                editor</button>
+
+                            <button
+                                data-bind="click: $data.mode() === 'info' ? $parent.hideInfo : $parent.showInfo">Show/Hide
+                                info</button>
+
+                            <div data-bind="visible: ($data.mode() === 'edit')">
+                                <label>Word</label>
+                                <input data-bind="value: $parent.newWord" type="text" class='input-field' readonly><br>
+                                <label>Translation</label>
+                                <input data-bind="value: $parent.newTranslation" type="text" class='input-field'><br>
+                                <label>English</label>
+                                <input data-bind="value: $parent.newEnglish" type="text" class='input-field'><br>
+                                <label>Context</label>
+                                <input data-bind="value: $parent.newContext" type="text" class='input-field'><br>
+                                <label>Rank</label>
+                                <input data-bind="value: $parent.newRank" type="text" class='input-field'><br>
+                                <button data-bind="click: $parent.updateRecord">Update record</button>
+                            </div>
+
+                            <div data-bind="visible: ($data.mode() === 'info')">
+                                <br>
+                                <table>
+                                    <tbody>
+                                        <tr data-bind="foreach: $parent.tokens">
+                                            <td data-bind="visible: $index() == 0">
+                                                <span><b>Tokens:</b></span>
+                                            </td>
+                                            <td class="center">
+                                                <span data-bind="text: $data"></span>
+                                            </td>
+                                        </tr>
+                                        <tr data-bind="foreach: $parent.tags">
+                                            <td data-bind="visible: $index() == 0">
+                                                <span><b>Tags:</b></span>
+                                            </td>
+                                            <td class="center">
+                                                <span data-bind="text: $data"></span>
+                                            </td>
+                                        </tr>
+                                        <tr data-bind="foreach: $parent.lemmas">
+                                            <td data-bind="visible: $index() == 0">
+                                                <span><b>Lemmas:</b></span>
+                                            </td>
+                                            <td class="center">
+                                                <span data-bind="text: $data"></span>
+                                            </td>
+                                        </tr>
+                                        <tr data-bind="foreach: $parent.ranks">
+                                            <td data-bind="visible: $index() == 0">
+                                                <span><b>Ranks:</b></span>
+                                            </td>
+                                            <td class="center">
+                                                <span data-bind="text: $data"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                        <td class="center">
+                            <a data-bind="event: {click: $parent.musicButtonClick}" class="music-button"><img
+                                    src="img/player_play.png"></a>
+                            <audio data-bind="attr: {src: 'audio/'+ $data.word() + '/' + $data.soundPath()}"
+                                class="player" type="audio/mpeg"></audio>
+                            <br><input
+                                data-bind="event: {change: $parent.inputRangeInputAndChange, input: $parent.inputRangeInputAndChange}"
+                                type="range" step="0.1" min="0.2" max="2" value="1" class="speed" />
+                            <br><span class="speed-text">1.0</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script type='text/javascript' src='js/knockout-3.5.0.js'></script>
+    <script src="js/utils.js"></script>
+    <script src="js/timer.js"></script>
+
+    <script>
+
+        var PhrasesViewModel = function () {
+            var self = this;
+
+            self.records = ko.observableArray([]);
+            self.availableWords = ko.observableArray();
+
+            self.availableLanguages = ko.observableArray();
+            self.languageString = ko.observable("loading...");
+
+            self.setWords = ko.observable("");
+            self.searchString = ko.observable("loading words from DB...");
+
+            self.minRank = ko.observable("0");
+            self.maxRank = ko.observable("7000");
+
+            self.isShuffle = true;
+            self.isUseCaseSensitiveSearch = false;
+
+            // for edit mode
+            self.newId = ko.observable("");
+            self.newWord = ko.observable("");
+            self.newTranslation = ko.observable("");
+            self.newEnglish = ko.observable("");
+            self.newContext = ko.observable("");
+            self.newRank = ko.observable("");
+            self.newSoundPath = ko.observable("");
+            self.radioSelectedOptionValue = ko.observable("0");
+
+            // for info mode
+            self.tokens = ko.observableArray([]);
+            self.tags = ko.observableArray([]);
+            self.lemmas = ko.observableArray([]);
+            self.ranks = ko.observableArray([]);
+
+            // загружает фразы-примеры по клику на кнопку "Load set" в зависимости от настроенного фильтра
+            self.loadSet = function () {
+                self.setWords(self.setWords().replace(/ \[.*\]/g, ""));
+                let words = self.setWords().split('\n');
+                self.records([]);
+                words.forEach(element => {
+                    if (element === "") {
+                        return;
+                    }
+
+                    let url = "";
+                    if (self.radioSelectedOptionValue() === "1") {
+                        // use full search by sentences (radioSelectedOptionValue=1)
+                        url = "http://localhost:8080/records/query/" + element.toLowerCase();
+                        if (self.isUseCaseSensitiveSearch) {
+                            url = url + "/0";
+                        } else {
+                            url = url + "/1";
+                        }
+                    } else {
+                        //use search with database references (radioSelectedOptionValue=0)
+                        url = "http://localhost:8080/records/" + element.toLowerCase();
+                    }
+                    url = url + "?minRank=" + self.minRank() + "&maxRank=" + self.maxRank();
+
+                    $.ajax(url, {
+                        type: "GET",
+                        success: function (allData) {
+                            var json = ko.toJSON(allData);
+                            var recordsFromServer = JSON.parse(json);
+                            var array = [];
+                            self.setWords(self.setWords().replace(new RegExp("^" + element + "$", "gm"), element.replace(/\r/g, "")
+                                + " [" + recordsFromServer.length + "]"))
+                            if (recordsFromServer.length === 0) {
+                                console.log("Empty set for " + element);
+                                return;
+                            } else {
+                                console.log("Process: [" + element + "] - " + recordsFromServer.length)
+                            }
+                            recordsFromServer.forEach(element => {
+                                var rec = new Phrase({
+                                    id: element.id,
+                                    word: element.word,
+                                    translation: element.translation,
+                                    english: element.english,
+                                    context: element.context,
+                                    rank: element.rank,
+                                    soundPath: element.soundPath,
+                                    mode: "",
+                                    currentAnswer: "",
+                                    visible: true
+                                });
+                                array.push(rec);
+                            });
+                            Array.prototype.push.apply(array, self.records());
+                            if (self.isShuffle) {
+                                array = shuffle(array);
+                            }
+                            self.records(array);
+                            self.splitByWords();
+                        }
+                    });
+                });
+            }
+
+            // добавляет выбранносе слово из "Request string" в список на левой панели
+            self.addWordToSet = function () {
+                var currentSet = self.setWords();
+                if (self.searchString() != "") {
+                    if (currentSet != "") {
+                        currentSet = currentSet + '\n';
+                    }
+                    currentSet = currentSet + self.searchString();
+                    self.setWords(currentSet);
+                }
+            }
+
+            // очищает слово в "Request string"
+            self.clearButtonClick = function () {
+                self.searchString("");
+            }
+
+            // очищает набор слов в "Set words"
+            self.clearSetClick = function () {
+                self.setWords("");
+            }
+
+            // загрузка всех доступных слов
+            self.loadAllAvailableWord = function () {
+                $.ajax("http://localhost:8070/words/all", {
+                    type: "GET",
+                    success: function (allData) {
+                        var json = ko.toJSON(allData);
+                        var wordsFromServer = JSON.parse(json);
+                        var array = [];
+                        wordsFromServer.forEach(element => {
+                            array.push(element.value);
+                        });
+                        self.availableWords(array);
+                        self.searchString("");
+                    }
+                });
+            }
+
+            // загрузка всех доступных языков
+            self.loadAllAvailableLanguages = function () {
+                $.ajax("http://localhost:8070/languages/all", {
+                    type: "GET",
+                    success: function (allData) {
+                        var json = ko.toJSON(allData);
+                        var wordsFromServer = JSON.parse(json);
+                        var array = [];
+                        wordsFromServer.forEach(element => {
+                            array.push(element.value);
+                        });
+                        self.availableLanguages(array);
+                        self.languageString(self.availableLanguages()[0]);
+                    }
+                });
+            }
+
+            // загружает фразы-примеры по клику на кнопку "Load word" в зависимости от настроенного фильтра
+            self.loadRecordByWord = function () {
+                let url = "";
+                // если не указано слово для поиска, то поиск идет по фразам входящим в диапазон minRank..maxRank
+                if (self.searchString() == "") {
+                    url = "http://localhost:8070/phrases/by/rank"
+                }
+                // если слово указано, то поиска идет по фразам отосящимся к данному слову в диапазоне фраз minRank..maxRank
+                else {
+                    url = "http://localhost:8070/phrases/by/word/" + self.searchString().toLowerCase();
+                }
+                url = url + "?minRank=" + self.minRank() + "&maxRank=" + self.maxRank() + "&language=" + self.languageString();
+
+                $.ajax(url, {
+                    type: "GET",
+                    success: function (allData) {
+                        var json = ko.toJSON(allData);
+                        var recordsFromServer = JSON.parse(json);
+                        var array = [];
+                        recordsFromServer.forEach(element => {
+                            var rec = new Phrase({
+                                id: element.id,
+                                word: element.word.value,
+                                translation: element.translations[0].value,
+                                english: element.value,
+                                context: element.context.value,
+                                rank: element.rank,
+                                soundPath: element.resource.path,
+                                mode: "",
+                                currentAnswer: "",
+                                visible: true
+                            });
+                            array.push(rec);
+                        });
+
+                        if (self.isShuffle) {
+                            array = shuffle(array);
+                        }
+                        console.log(array);
+                        self.records(array);
+                    }
+                });
+            };
+
+            // считает количество доступных для отображения фраз
+            self.getCountVisiblePhrases = function () {
+                let visibleCount = 0;
+                self.records().forEach(element => {
+                    if (element.visible()) {
+                        visibleCount++;
+                    }
+                });
+                return visibleCount;
+            }
+
+            // делает запрос о подробной информации о предложении
+            self.showInfo = function (record) {
+                self.records().forEach(element => {
+                    element.mode("");
+                });
+
+                $.ajax("http://localhost:8070/sentences/info", {
+                    data: record.english().replace(/[\[\]]/g, ""),
+                    type: "POST",
+                    contentType: "application/json",
+                    success: function (allData) {
+                        console.log(allData);
+                        var json = ko.toJSON(allData);
+                        var infoFromServer = JSON.parse(json);
+                        self.tokens(infoFromServer.tokens);
+                        self.tags(infoFromServer.tags);
+                        self.lemmas(infoFromServer.lemmas);
+                        self.ranks(infoFromServer.ranks);
+                        record.mode("info");
+                    }
+                });
+            }
+
+            self.hideInfo = function (record) {
+                record.mode("");
+            }
+
+            self.showEditor = function (record) {
+                self.records().forEach(element => {
+                    element.mode("");
+                });
+
+                record.mode("edit");
+                self.newId(record.id());
+                self.newEnglish(record.english());
+                self.newTranslation(record.translation());
+                self.newWord(record.word());
+                self.newContext(record.context());
+                self.newRank(record.rank());
+                self.newSoundPath(record.soundPath());
+            }
+
+            self.hideEditor = function (record) {
+                record.mode("");
+            }
+
+            self.updateRecord = function (record) {
+                var dataJson = '{"id":' +
+                    self.newId() +
+                    ',"word":"' + self.newWord() +
+                    '","translation":"' + self.newTranslation() +
+                    '","english":"' + self.newEnglish() +
+                    '","soundPath":"' + self.newSoundPath() +
+                    '","context":"' + self.newContext() +
+                    '","rank":"' + self.newRank() +
+                    '"}';
+                console.log(dataJson);
+                $.ajax("http://localhost:8080/records/" + self.newId(), {
+                    data: dataJson,
+                    type: "put",
+                    contentType: "application/json",
+                    success: function (allData) {
+                        alert("Record was successful updated");
+                        record.mode("");
+                        record.id(self.newId());
+                        record.word(self.newWord());
+                        record.translation(self.newTranslation());
+                        record.english(self.newEnglish());
+                        record.soundPath(self.newSoundPath());
+                        record.context(self.newContext());
+                        record.rank(self.newRank());
+                    }
+                });
+            }
+
+            self.inputFiledKeyUp = function (record, event) {
+                var $this = $(event.target);
+
+                if ($this.hasClass('invalid')) {
+                    $this.removeClass('invalid')
+                }
+
+                if ($this.hasClass('correct')) {
+                    $this.removeClass('correct')
+                }
+
+                if (event.keyCode == 113) {
+                    let checkbox = $this.closest('tr')[0].getElementsByClassName('show_question')[0];
+                    $(checkbox).trigger('click');
+                }
+
+                if (event.keyCode == 13) {
+                    var actualVal = "";
+                    tipColl = $this.closest('td')[0].getElementsByClassName('tip');
+                    for (let i = 0; i < tipColl.length; i++) {
+                        actualVal = actualVal + tipColl[i].innerHTML;
+                    }
+                    actualVal = actualVal.replace(/[\[\]]/g, "");
+                    var currentVal = $this.val();
+                    var checkDiv = $this.closest('td')[0].getElementsByClassName('check')[0];
+                    currentVal = currentVal.replace(/[,:;?.!]/g, "").replace(/[ ]{2,}/g, " ");
+                    actualVal = actualVal.replace(/[,:;?.!]/g, "").replace(/[ ]{2,}/g, " ");
+                    $this.closest('tr')[0].getElementsByClassName('music-button')[0].click();
+                    if (currentVal != actualVal) {
+                        $this.addClass('invalid');
+                        checkDiv.innerHTML = checkTranslate(actualVal, currentVal);
+                    } else {
+                        $this.addClass('correct');
+                        checkDiv.innerHTML = '';
+                    }
+                }
+
+                if (event.keyCode == 40) {
+                    let currentVal = Number($this.closest('tr')[0].getElementsByClassName('speed')[0].value) - 0.1;
+                    $this.closest('tr')[0].getElementsByClassName('speed')[0].value = currentVal;
+                    $this.closest('tr')[0].getElementsByClassName('speed')[0].dispatchEvent(new Event("change"));
+                }
+
+                if (event.keyCode == 38) {
+                    let currentVal = Number($this.closest('tr')[0].getElementsByClassName('speed')[0].value) + 0.1;
+                    $this.closest('tr')[0].getElementsByClassName('speed')[0].value = currentVal;
+                    $this.closest('tr')[0].getElementsByClassName('speed')[0].dispatchEvent(new Event("change"));
+                }
+            };
+
+            self.musicButtonClick = function (record, event) {
+                var $this = $(event.target);
+                audioEl = $this.closest('td')[0].getElementsByTagName('audio')[0];
+                audioEl.playbackRate = $this.closest('td')[0].getElementsByClassName('speed')[0].value;
+                audioEl.play();
+            }
+
+            self.inputRangeInputAndChange = function (record, event) {
+                var $this = $(event.target);
+                $this.nextAll('.speed-text')[0].innerHTML = parseFloat($this.val()).toFixed(1);
+            }
+
+            self.showQuestionCheckboxChange = function (record, event) {
+                var $this = $(event.target);
+                if ($this.is(":checked")) {
+                    $this.closest('tr')[0].getElementsByClassName('question')[0].classList.remove('question_hidden');
+                    if ($this.closest('tr')[0].getElementsByClassName('support').length > 0) {
+                        $this.closest('tr')[0].getElementsByClassName('support')[0].classList.remove('question_hidden');
+                    }
+                    return;
+                }
+                $this.closest('tr')[0].getElementsByClassName('question')[0].classList.add('question_hidden');
+                if ($this.closest('tr')[0].getElementsByClassName('support').length > 0) {
+                    $this.closest('tr')[0].getElementsByClassName('support')[0].classList.add('question_hidden');
+                }
+            }
+
+            self.getEnglishWihtNamesHintsAndFirstUpper = function (english) {
+                var result = getWithFirstUpperCase(english);
+                return "<span class='tip hide'>" + result.replace(/(\[.*?\])/g, "</span><span class='tip show'>$1</span><span class='tip hide'>") + "</span>";
+            };
+
+            self.getTranslationWithFirstUpperLetter = function (translation) {
+                return getWithFirstUpperCase(translation)
+            };
+
+            // init events
+            self.loadAllAvailableWord();
+            self.loadAllAvailableLanguages();
+        };
+
+        var Phrase = function (data) {
+            var self = this;
+            self.id = ko.observable(data.id);
+            self.word = ko.observable(data.word);
+            self.translation = ko.observable(data.translation);
+            self.english = ko.observable(data.english);
+            self.context = ko.observable(data.context);
+            self.rank = ko.observable(data.rank);
+            self.soundPath = ko.observable(data.soundPath);
+            self.mode = ko.observable(data.mode);
+            self.currentAnswer = ko.observable(data.currentAnswer);
+            self.visible = ko.observable(data.visible);
+        };
+        ko.options.useOnlyNativeEvents = true;
+        ko.applyBindings(new PhrasesViewModel());
+    </script>
+</body>

@@ -16,7 +16,7 @@ public class PhraseController {
     @Autowired
     private PhraseService phraseService;
 
-    @GetMapping("/phrases/{word}")
+    @GetMapping("/phrases/by/word/{word}")
     public List<PhraseDto> getPhrasesForWord(
             @PathVariable String word,
             @RequestParam(
@@ -24,12 +24,13 @@ public class PhraseController {
                     required = false) Integer minRank,
             @RequestParam(
                     defaultValue = "2147483647",
-                    required = false) Integer maxRank
+                    required = false) Integer maxRank,
+            @RequestParam String language
     ) {
-        return phraseService.getPhrasesByWord(word, minRank, maxRank);
+        return phraseService.getPhrasesByWord(word, minRank, maxRank, language);
     }
 
-//    @GetMapping("/records/query/{query}/{param}")
+    //    @GetMapping("/records/query/{query}/{param}")
 //    public List<Phrase> getAllPhrasesQueryString(
 //            @PathVariable String query,
 //            @PathVariable int param,
@@ -58,13 +59,18 @@ public class PhraseController {
 //        return new ResponseEntity<>(recordService.getPhrasesByIds(ids), HttpStatus.OK);
 //    }
 //
-//    @GetMapping("records/rank")
-//    public ResponseEntity<List<Phrase>> getPhrasesWithRank(
-//            @RequestParam Integer minRank,
-//            @RequestParam Integer maxRank
-//    ) {
-//        return new ResponseEntity<>(recordService.getAllPhrasesWithRank(minRank, maxRank), HttpStatus.OK);
-//    }
+    @GetMapping("phrases/by/rank")
+    public List<PhraseDto> getPhrasesWithRank(
+            @RequestParam(
+                    defaultValue = "0",
+                    required = false) Integer minRank,
+            @RequestParam(
+                    defaultValue = "2147483647",
+                    required = false) Integer maxRank,
+            @RequestParam String language
+    ) {
+        return phraseService.getAllPhrasesWithRank(minRank, maxRank,language);
+    }
 
 
 }

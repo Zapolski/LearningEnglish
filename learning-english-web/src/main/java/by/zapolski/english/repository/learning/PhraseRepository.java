@@ -13,13 +13,18 @@ import java.util.List;
 public interface PhraseRepository extends JpaRepository<Phrase, Long> {
     long count();
 
-    //select * from phrase p where (p.rank between 0 and 610010) and p.word_id = (select id from word w where w.value = 'bag');
-    //@Query("SELECT a FROM Locality a INNER JOIN a.city c WHERE c.cityId = :cityId")
-    @Query("select p from Phrase p where p.rank >= :minRank and p.rank <= :maxRank and p.word.value = :wordValue ")
+    @Query("select p from Phrase p where p.rank >= :minRank and p.rank <= :maxRank and p.word.value = :wordValue")
     List<Phrase> getPhrasesForWord(
             @Param("wordValue") String wordValue,
             @Param("minRank") Integer minRank,
             @Param("maxRank") Integer maxRank,
-            Sort sort);
+            Sort sort
+    );
 
+    @Query("select p from Phrase p where p.rank >= :minRank and p.rank <= :maxRank")
+    List<Phrase> getPhrasesByRanks(
+            @Param("minRank") Integer minRank,
+            @Param("maxRank") Integer maxRank,
+            Sort sort
+    );
 }

@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface TranslationRepository extends JpaRepository<Translation, Long> {
     Translation getByValue(String translationValue);
 
+    Translation tegByLanguageValueAndPhraseId(String languageValue, Long phraseId);
+
     long count();
 }

@@ -18,7 +18,19 @@ public interface PhraseService {
      * @param word английское слово
      * @param minRank минимальный ранг для искомых фраз
      * @param maxRank максимальный ранг для искомых фраз
+     * @param language язык перевода
      * @return список фраз-примеров связанных с изучаемым словом
      */
-    List<PhraseDto> getPhrasesByWord(String word, Integer minRank, Integer maxRank);
+    List<PhraseDto> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language);
+
+    /**
+     * Каждой фразе присвоен ранг, он соответствует рагу самоого редкоиспользуемого слова
+     * Метод возвращает фразы в дипазаон рангов
+     *
+     * @param minRank минимальный ранг для искомы фраз
+     * @param maxRank максимальный ранг для искомых фраз
+     * @param language язык перевода
+     * @return список фраз-примеров воходящик в диапозон рангов
+     */
+    List<PhraseDto> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language);
 }

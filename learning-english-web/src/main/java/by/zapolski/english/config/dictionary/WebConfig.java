@@ -14,11 +14,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler(
                 "/img/**",
                 "/css/**",
-                "/js/**")
+                "/js/**",
+                "/audio/**")
                 .addResourceLocations(
                         "classpath:/static/img/",
                         "classpath:/static/css/",
-                        "classpath:/static/js/");
+                        "classpath:/static/js/",
+                        "file:///D:/ideaProjects/learning-english/learning-english-web/audio/");
     }
 
 }

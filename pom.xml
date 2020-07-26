@@ -33,7 +33,6 @@
     <modules>
         <module>learning-english-web</module>
         <module>learning-english-entity</module>
-        <module>learning-english-dto</module>
     </modules>
 
     <dependencyManagement>
