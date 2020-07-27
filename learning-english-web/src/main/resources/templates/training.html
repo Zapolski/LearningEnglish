@@ -444,28 +444,24 @@
             }
 
             self.updateRecord = function (record) {
-                var dataJson = '{"id":' +
-                    self.newId() +
-                    ',"word":"' + self.newWord() +
-                    '","translation":"' + self.newTranslation() +
+                var dataJson = 
+                    '{"id":"' + self.newId() + '",' + 
+                    '"translation":"' + self.newTranslation() +
                     '","english":"' + self.newEnglish() +
-                    '","soundPath":"' + self.newSoundPath() +
                     '","context":"' + self.newContext() +
                     '","rank":"' + self.newRank() +
+                    '","language":"' + self.languageString() +                    
                     '"}';
                 console.log(dataJson);
-                $.ajax("http://localhost:8080/records/" + self.newId(), {
+                $.ajax("http://localhost:8070/phrases/update/" + self.newId(), {
                     data: dataJson,
                     type: "put",
                     contentType: "application/json",
                     success: function (allData) {
                         alert("Record was successful updated");
                         record.mode("");
-                        record.id(self.newId());
-                        record.word(self.newWord());
                         record.translation(self.newTranslation());
                         record.english(self.newEnglish());
-                        record.soundPath(self.newSoundPath());
                         record.context(self.newContext());
                         record.rank(self.newRank());
                     }

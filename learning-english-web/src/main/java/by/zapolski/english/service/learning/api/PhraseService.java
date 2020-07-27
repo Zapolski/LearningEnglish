@@ -1,5 +1,7 @@
 package by.zapolski.english.service.learning.api;
 
+import by.zapolski.english.dictionary.dto.PhraseUpdateDto;
+import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.learning.dto.PhraseDto;
 import org.springframework.stereotype.Service;
 
@@ -33,4 +35,12 @@ public interface PhraseService {
      * @return список фраз-примеров воходящик в диапозон рангов
      */
     List<PhraseDto> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language);
+
+    /**
+     * Обновляет фразу по данным, пришедшим с UI
+     *
+     * @param phraseUpdateDto обновленные поля для фразы-примера
+     * @return DTO для обновленной фразы
+     */
+    PhraseDto updatePhrase(PhraseUpdateDto phraseUpdateDto);
 }
