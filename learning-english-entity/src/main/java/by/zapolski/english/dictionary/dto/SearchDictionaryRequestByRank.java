@@ -14,5 +14,5 @@ public class SearchDictionaryRequestByRank {
 
     @NotNull(message = "Can't be empty")
     @Min(value = 0, message = "Value must be more than 0")
-    private Integer rank;
+    private Integer searchRank;
 }

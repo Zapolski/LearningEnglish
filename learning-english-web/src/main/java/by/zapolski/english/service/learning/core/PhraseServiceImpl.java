@@ -8,9 +8,7 @@ import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.learning.mapper.PhraseMapper;
 import by.zapolski.english.repository.learning.ContextRepository;
 import by.zapolski.english.repository.learning.PhraseRepository;
-import by.zapolski.english.repository.learning.TranslationRepository;
 import by.zapolski.english.service.learning.api.PhraseService;
-import lombok.extern.log4j.Log4j2;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 
 
 @Service
-@Log4j2
 public class PhraseServiceImpl implements PhraseService {
 
     @Autowired
@@ -84,7 +81,6 @@ public class PhraseServiceImpl implements PhraseService {
         phraseRepository.save(phrase);
 
         PhraseDto phraseDto = phraseMapper.phraseToDto(phrase);
-        log.info(phraseDto);
 
         return null;
     }

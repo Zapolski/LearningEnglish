@@ -3,10 +3,11 @@ package by.zapolski.english.service.learning.core.loader;
 import by.zapolski.english.learning.domain.*;
 import by.zapolski.english.repository.learning.*;
 import by.zapolski.english.service.learning.api.DbLoaderService;
-import lombok.extern.log4j.Log4j2;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Log4j2
 @Service
 public class DbLoaderServiceImpl implements DbLoaderService {
+
+    private static final Logger log = LoggerFactory.getLogger(DbLoaderServiceImpl.class);
 
     private static final String EXCEL_FILE = "phrases.xls";
 
@@ -65,10 +67,15 @@ public class DbLoaderServiceImpl implements DbLoaderService {
         ) {
             logCounts("---> Counts before clean:");
             phraseRepository.deleteAll();
+            log.info("Phrases was deleted.");
             languageRepository.deleteAll();
+            log.info("Languages was deleted.");
             wordRepository.deleteAll();
+            log.info("Words was deleted.");
             contextRepository.deleteAll();
+            log.info("Contexts was deleted.");
             ruleRepository.deleteAll();
+            log.info("Rules was deleted.");
             logCounts("---> Counts after clean:");
 
             Language currentLanguage = new Language("Russian");

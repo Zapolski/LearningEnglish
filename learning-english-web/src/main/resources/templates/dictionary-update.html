@@ -17,28 +17,33 @@
 </head>
 
 <body>
-    <div class="container my-3">
-        <form action="#" th:action="@{/dictionary/update/{id}(id=${lemma.id})}" th:object="${lemma}" method="post">
-            <h4 class="my-3">Update lemma in dictionary</h4>
-            <div>
-                <label for="value">Word: </label>
-                <input type="text" th:field="*{value}" id="value" placeholder="Word" />
-                <span th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></span>
-            </div>
-            <div>
-                <label for="rank">Rank: </label>
-                <input type="text" th:field="*{rank}" id="rank" placeholder="Rank" />
-                <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
-            </div>
-            <div>
-                <label for="partOfSpeech">Part of speech: </label>
-                <input type="text" th:field="*{partOfSpeech}" id="partOfSpeech" placeholder="Part of speech" />
-                <span th:if="${#fields.hasErrors('partOfSpeech')}" th:errors="*{partOfSpeech}"></span>
-            </div>
-            <input type="submit" value="Update">
-        </form>
-        <a href="/dictionary/search">Back to search</a>
-    </div>
+<div class="container my-3">
+    <form action="#"
+          th:action="@{/dictionary/update(word=${param.word},threshold=${param.threshold},searchRank=${param.searchRank})}"
+          th:object="${lemma}" method="post">
+        <h4 class="my-3">Update lemma in dictionary</h4>
+        <div>
+            <input type="hidden" th:field="*{id}" id="id"/>
+        </div>
+        <div>
+            <label for="value">Word: </label>
+            <input type="text" th:field="*{value}" id="value" placeholder="Word"/>
+            <span th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></span>
+        </div>
+        <div>
+            <label for="rank">Rank: </label>
+            <input type="text" th:field="*{rank}" id="rank" placeholder="Rank"/>
+            <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
+        </div>
+        <div>
+            <label for="partOfSpeech">Part of speech: </label>
+            <input type="text" th:field="*{partOfSpeech}" id="partOfSpeech" placeholder="Part of speech"/>
+            <span th:if="${#fields.hasErrors('partOfSpeech')}" th:errors="*{partOfSpeech}"></span>
+        </div>
+        <input type="submit" value="Update">
+    </form>
+    <a href="/dictionary/search" class="my-3">Back to search</a>
+</div>
 </body>
 
 </html>

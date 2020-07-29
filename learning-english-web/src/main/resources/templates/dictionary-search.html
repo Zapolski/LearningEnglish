@@ -20,9 +20,8 @@
 <body>
 
 <div class="container-xl">
-    <h4 class="my-3">Search lemmas by value and similarity threshold or by rank</h4>
-
-    <form action="#" th:action="@{/dictionary/search}" th:object="${searchRequest}" method="post">
+    <h4 class="my-3">Search lemmas by value and similarity threshold</h4>
+    <form action="#" th:action="@{/dictionary/search/by/similarity}" th:object="${searchRequest}" method="post">
         <div>
             <label for="word">Word</label>
             <input type="text" th:field="*{word}" id="word" placeholder="Word" />
@@ -35,23 +34,46 @@
         </div>
         <input type="submit" value="Search by value and similarity threshold">
     </form>
-
-    <p></p>
-    <form action="#" th:action="@{/dictionary/search/rank}" th:object="${searchDictionaryRequestByRank}" method="post">
+    <hr>
+    <h4 class="my-3">Search lemmas by rank</h4>
+    <form action="#" th:action="@{/dictionary/search/by/rank}" th:object="${searchDictionaryRequestByRank}" method="post">
         <div>
-            <label for="rank">Rank</label>
-            <input type="number" id="rank" th:field="*{rank}" placeholder="Rank" />
-            <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
+            <label for="searchRank">Rank</label>
+            <input type="number" id="searchRank" th:field="*{searchRank}" placeholder="Rank" />
+            <span th:if="${#fields.hasErrors('searchRank')}" th:errors="*{searchRank}"></span>
         </div>
         <input type="submit" value="Search by rank">
     </form>
+    <hr>
+    <div class="container my-3">
+        <form action="#" th:action="@{/dictionary/add(word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchDictionaryRequestByRank.searchRank})}" th:object="${lemma}" method="post">
+            <h4 class="my-3">Add new lemma to dictionary</h4>
+            <p><span th:text="${messageResult}">[adding status]</span></p>
+            <div>
+                <label for="value">Word: </label>
+                <input type="text" th:field="*{value}" id="value" placeholder="Word" />
+                <span th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></span>
+            </div>
+            <div>
+                <label for="addRank">Rank: </label>
+                <input type="text" th:field="*{rank}" id="addRank" placeholder="Rank" />
+                <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
+            </div>
+            <div>
+                <label for="partOfSpeech">Part of speech: </label>
+                <input type="text" th:field="*{partOfSpeech}" id="partOfSpeech" placeholder="Part of speech" />
+                <span th:if="${#fields.hasErrors('partOfSpeech')}" th:errors="*{partOfSpeech}"></span>
+            </div>
+            <input type="submit" value="Add">
+        </form>
+    </div>
+    <hr>
 </div>
 
-<div th:switch="${#lists.size(lemmas)}" class="container-xl">
-
+<div th:switch="${lemmas}" class="container-xl">
     <p></p>
-    <div th:case="0">
-        <p>Found records: <span th:text="${#lists.size(lemmas)}">[Number of Elements]</span></p>
+    <div th:case="null">
+        <p>Found records: <span th:text="0">[Number of Elements]</span></p>
     </div>
     <div th:case="*">
         <p>Found records: <span th:text="${#lists.size(lemmas)}">[Number of Elements]</span></p>
@@ -61,11 +83,6 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <h2>Search result list</h2>
-                        </div>
-                        <div class="col-sm-6">
-                            <a href="/dictionary/add" class="btn btn-success">
-                                <i class="material-icons">&#xE147;</i><span>Add New Lemma</span>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -86,10 +103,10 @@
                         <td th:text="${lemma.partOfSpeech}"></td>
                         <td th:text="${lemma.similarity}"></td>
                         <td>
-                            <a th:href="@{/dictionary/edit/{id}(id=${lemma.id})}" class="edit">
+                            <a th:href="@{/dictionary/edit(id=${lemma.id},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchDictionaryRequestByRank.searchRank})}" class="edit">
                                 <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
                             </a>
-                            <a th:href="@{/dictionary/delete(id=${lemma.id},word=${searchRequest.word},threshold=${searchRequest.threshold},rank=${searchDictionaryRequestByRank.rank})}" class="delete" id="deleteButton">
+                            <a th:href="@{/dictionary/delete(id=${lemma.id},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchDictionaryRequestByRank.searchRank})}" class="delete" id="deleteButton">
                                 <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
                             </a>
                         </td>

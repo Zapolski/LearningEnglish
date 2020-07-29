@@ -5,22 +5,27 @@ import by.zapolski.english.dictionary.dto.DictionaryWithSimilarityDto;
 import by.zapolski.english.dictionary.dto.SearchDictionaryRequest;
 import by.zapolski.english.dictionary.dto.SearchDictionaryRequestByRank;
 import by.zapolski.english.service.dictionary.api.DictionaryService;
-import lombok.extern.log4j.Log4j2;
+import by.zapolski.english.service.learning.core.loader.DbLoaderServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@Log4j2
 public class DictionaryMvcController {
+
+    private static final Logger log = LoggerFactory.getLogger(DbLoaderServiceImpl.class);
 
     @Autowired
     DictionaryService dictionaryService;
@@ -28,8 +33,8 @@ public class DictionaryMvcController {
     @GetMapping("/dictionary/search")
     public String search(
             @ModelAttribute("searchRequest") SearchDictionaryRequest searchDictionaryRequest,
-            @ModelAttribute("lemmas") ArrayList<DictionaryWithSimilarityDto> lemmas,
             @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
+            @ModelAttribute("lemma") DictionaryDto dictionaryDto,
             Model model) {
 
         if (searchDictionaryRequest.getWord() != null && !searchDictionaryRequest.getWord().isEmpty()) {
@@ -39,8 +44,8 @@ public class DictionaryMvcController {
             model.addAttribute("lemmas", result);
         }
 
-        if (searchDictionaryRequestByRank.getRank() != null){
-            List<DictionaryDto> dtoList = dictionaryService.getByRank(searchDictionaryRequestByRank.getRank());
+        if (searchDictionaryRequestByRank.getSearchRank() != null) {
+            List<DictionaryDto> dtoList = dictionaryService.getByRank(searchDictionaryRequestByRank.getSearchRank());
             List<DictionaryWithSimilarityDto> result = dtoList.stream()
                     .map(d -> new DictionaryWithSimilarityDto(d.getId(), d.getValue(), d.getRank(), d.getPartOfSpeech(), 100d))
                     .collect(Collectors.toList());
@@ -50,112 +55,114 @@ public class DictionaryMvcController {
         return "dictionary-search";
     }
 
-    @PostMapping("/dictionary/search")
+    @PostMapping("/dictionary/search/by/similarity")
     public String showSearchResult(
-            @ModelAttribute("lemmas") ArrayList<DictionaryWithSimilarityDto> lemmas,
             @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
+            @ModelAttribute("lemma") DictionaryDto dictionaryDto,
             @ModelAttribute("searchRequest") @Valid SearchDictionaryRequest searchRequest,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("searchDictionaryRequestByRank", searchDictionaryRequestByRank);
+            model.addAttribute("lemma", dictionaryDto);
             return "dictionary-search";
         }
         redirectAttributes.addFlashAttribute("searchRequest", searchRequest);
         return "redirect:/dictionary/search";
     }
 
-    @PostMapping("/dictionary/search/rank")
+    @PostMapping("/dictionary/search/by/rank")
     public String showSearchResultByRank(
-            @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
+            @ModelAttribute("lemma") DictionaryDto dictionaryDto,
+            @ModelAttribute("searchRequest") SearchDictionaryRequest searchRequest,
+            @ModelAttribute("searchDictionaryRequestByRank") @Valid SearchDictionaryRequestByRank searchDictionaryRequestByRank,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("searchRequest", searchRequest);
+            model.addAttribute("lemma", dictionaryDto);
             return "dictionary-search";
         }
         redirectAttributes.addFlashAttribute("searchDictionaryRequestByRank", searchDictionaryRequestByRank);
         return "redirect:/dictionary/search";
     }
 
-    @GetMapping("/dictionary/add")
-    public String add(
-            @ModelAttribute("lemma") DictionaryDto dictionaryDto,
-            Model model
-    ) {
-        return "dictionary-add";
-    }
-
     @PostMapping("/dictionary/add")
     public String addPost(
-            @ModelAttribute("searchRequest") SearchDictionaryRequest searchDictionaryRequest,
-            @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
+            @RequestParam(value = "word") String word,
+            @RequestParam(value = "threshold") Integer threshold,
+            @RequestParam(value = "searchRank") Integer searchRank,
             @ModelAttribute("lemma") @Valid DictionaryDto dictionaryDto,
             BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            return "dictionary-add";
+            model.addAttribute("searchRequest", new SearchDictionaryRequest(word, threshold));
+            model.addAttribute("searchDictionaryRequestByRank", new SearchDictionaryRequestByRank(searchRank));
+            return "dictionary-search";
         }
+        redirectAttributes.addFlashAttribute("searchRequest", new SearchDictionaryRequest(word, threshold));
+        redirectAttributes.addFlashAttribute("searchDictionaryRequestByRank", new SearchDictionaryRequestByRank(searchRank));
         dictionaryService.save(dictionaryDto);
-
-        List<DictionaryWithSimilarityDto> result =
-                dictionaryService.getSimilarWordsWithAccuracyThreshold(dictionaryDto.getValue(), 100);
-        SearchDictionaryRequest searchRequest = new SearchDictionaryRequest(dictionaryDto.getValue(), 100);
-
-        model.addAttribute("lemmas", result);
-        model.addAttribute("searchRequest", searchRequest);
-        return "dictionary-search";
+        return "redirect:/dictionary/search";
     }
 
-    @GetMapping("/dictionary/edit/{id}")
+    @GetMapping("/dictionary/edit")
     public String edit(
-            @PathVariable("id") Long id,
+            @RequestParam(value = "word") String word,
+            @RequestParam(value = "threshold") Integer threshold,
+            @RequestParam(value = "searchRank") Integer searchRank,
+            @RequestParam(value = "id") long id,
             Model model
     ) {
         DictionaryDto dictionaryDto = dictionaryService.getById(id);
         model.addAttribute("lemma", dictionaryDto);
+        model.addAttribute("word", word);
+        model.addAttribute("threshold", threshold);
+        model.addAttribute("searchRank", searchRank);
         return "dictionary-update";
     }
 
-    @PostMapping("/dictionary/update/{id}")
+    @PostMapping("/dictionary/update")
     public String update(
-            @ModelAttribute("searchRequest") SearchDictionaryRequest searchDictionaryRequest,
-            @ModelAttribute("searchDictionaryRequestByRank") SearchDictionaryRequestByRank searchDictionaryRequestByRank,
-            @PathVariable("id") Long id,
+            @RequestParam(value = "word") String word,
+            @RequestParam(value = "threshold") Integer threshold,
+            @RequestParam(value = "searchRank") Integer searchRank,
             @ModelAttribute("lemma") @Valid DictionaryDto dictionaryDto,
             BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
             Model model
     ) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("word", word);
+            model.addAttribute("threshold", threshold);
+            model.addAttribute("searchRank", searchRank);
             return "dictionary-update";
         }
 
-        dictionaryDto.setId(id);
-        DictionaryDto newDictionaryDto = dictionaryService.save(dictionaryDto);
-
-        List<DictionaryWithSimilarityDto> result =
-                dictionaryService.getSimilarWordsWithAccuracyThreshold(newDictionaryDto.getValue(), 100);
-        SearchDictionaryRequest searchRequest = new SearchDictionaryRequest(newDictionaryDto.getValue(), 100);
-
-        model.addAttribute("lemmas", result);
-        model.addAttribute("searchRequest", searchRequest);
-
-        return "dictionary-search";
+        log.info("{}", dictionaryDto);
+        dictionaryService.save(dictionaryDto);
+        redirectAttributes.addFlashAttribute("searchRequest", new SearchDictionaryRequest(word, threshold));
+        redirectAttributes.addFlashAttribute("searchDictionaryRequestByRank", new SearchDictionaryRequestByRank(searchRank));
+        return "redirect:/dictionary/search";
     }
 
     @GetMapping("/dictionary/delete")
     public String delete(
             @RequestParam(value = "word") String word,
             @RequestParam(value = "threshold") Integer threshold,
-            @RequestParam(value = "rank") Integer rank,
-            @RequestParam(value = "id", required = false) long id,
-            RedirectAttributes redirectAttributes,
-            Model model
+            @RequestParam(value = "searchRank") Integer searchRank,
+            @RequestParam(value = "id") long id,
+            RedirectAttributes redirectAttributes
     ) {
         dictionaryService.deleteById(id);
-        redirectAttributes.addFlashAttribute("searchRequest", new SearchDictionaryRequest(word,threshold));
-        redirectAttributes.addFlashAttribute("searchDictionaryRequestByRank", new SearchDictionaryRequestByRank(rank));
+        redirectAttributes.addFlashAttribute("searchRequest", new SearchDictionaryRequest(word, threshold));
+        redirectAttributes.addFlashAttribute("searchDictionaryRequestByRank", new SearchDictionaryRequestByRank(searchRank));
         return "redirect:/dictionary/search";
     }
 

@@ -6,7 +6,6 @@ import by.zapolski.english.dictionary.dto.DictionaryWithSimilarityDto;
 import by.zapolski.english.dictionary.mapper.DictionaryMapper;
 import by.zapolski.english.repository.dictionary.DictionaryRepository;
 import by.zapolski.english.service.dictionary.api.DictionaryService;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Log4j2
 public class DictionaryServiceImpl implements DictionaryService {
 
     private DictionaryMapper dictionaryMapper = Mappers.getMapper(DictionaryMapper.class);
@@ -71,7 +69,7 @@ public class DictionaryServiceImpl implements DictionaryService {
     }
 
     @Override
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         dictionaryRepository.deleteById(id);
     }
 
