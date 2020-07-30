@@ -37,7 +37,7 @@ public class PhraseController {
         return phraseService.updatePhrase(phraseUpdateDto);
     }
 
-    @GetMapping("phrases/by/searchRank")
+    @GetMapping("phrases/by/rank")
     public List<PhraseDto> getPhrasesWithRank(
             @RequestParam(
                     defaultValue = "0",

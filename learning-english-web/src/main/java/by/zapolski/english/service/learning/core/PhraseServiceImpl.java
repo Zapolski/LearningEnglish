@@ -82,7 +82,7 @@ public class PhraseServiceImpl implements PhraseService {
 
         PhraseDto phraseDto = phraseMapper.phraseToDto(phrase);
 
-        return null;
+        return phraseDto;
     }
 
     private List<PhraseDto> filterByLanguage(List<PhraseDto> list, String language) {

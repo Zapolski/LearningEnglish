@@ -45,6 +45,7 @@ public class Phrase implements Serializable {
      * Контекст-определение изучаемого слова в данной фразе-примере
      */
     @ManyToOne(
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH} // для нового контекста создается новая сущность
     )
     @JoinColumn(name = "context_id")
@@ -55,7 +56,7 @@ public class Phrase implements Serializable {
      */
     @OneToMany(
             mappedBy = "phrase",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL // переводы полностью привязаны к фразе-примеру
     )
     private List<Translation> translations = new ArrayList<>();
