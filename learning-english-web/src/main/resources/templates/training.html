@@ -92,7 +92,7 @@
                             <span data-bind="text: 'R:' + $data.rank()"></span>
                         </td>
                         <td>
-                            <span data-bind="attr: {tabindex: ($index() + 100001), data_title: $data.context()}"
+                            <span data-bind="attr: {tabindex: ($index() + 100001), data_title: '[' + $data.word() + ']' + ' - ' + $data.context()}"
                                 class='support question_hidden' data-title=''>
                                 <em>?</em>
                             </span>
