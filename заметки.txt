@@ -1,0 +1,4 @@
+базовый класс для CRUD в сервисах !!!!
+посмотреть ThreadLocal
+
+в @Transactional есть две настройки: propagation и уровень изоляции
