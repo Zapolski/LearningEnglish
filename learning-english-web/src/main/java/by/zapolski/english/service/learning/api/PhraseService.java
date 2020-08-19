@@ -1,5 +1,6 @@
 package by.zapolski.english.service.learning.api;
 
+import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.dto.PhraseDto;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public interface PhraseService {
      * @param language язык перевода
      * @return список фраз-примеров связанных с изучаемым словом
      */
-    List<PhraseDto> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language);
+    List<Phrase> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language);
 
     /**
      * Каждой фразе присвоен ранг, он соответствует рагу самоого редкоиспользуемого слова
@@ -33,7 +34,7 @@ public interface PhraseService {
      * @param language язык перевода
      * @return список фраз-примеров воходящик в диапозон рангов
      */
-    List<PhraseDto> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language);
+    List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language);
 
     /**
      * Обновляет фразу по данным, пришедшим с UI
@@ -41,5 +42,5 @@ public interface PhraseService {
      * @param phraseUpdateDto обновленные поля для фразы-примера
      * @return DTO для обновленной фразы
      */
-    PhraseDto updatePhrase(PhraseUpdateDto phraseUpdateDto);
+    Phrase updatePhrase(PhraseUpdateDto phraseUpdateDto);
 }

@@ -1,16 +1,12 @@
 package by.zapolski.english.service.learning.core;
 
-import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.domain.Context;
 import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.learning.domain.Translation;
-import by.zapolski.english.learning.dto.PhraseDto;
-import by.zapolski.english.learning.mapper.PhraseMapper;
+import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.repository.learning.ContextRepository;
 import by.zapolski.english.repository.learning.PhraseRepository;
 import by.zapolski.english.service.learning.api.PhraseService;
-import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,42 +18,32 @@ import java.util.stream.Collectors;
 @Service
 public class PhraseServiceImpl implements PhraseService {
 
-    @Autowired
-    PhraseRepository phraseRepository;
+    private final PhraseRepository phraseRepository;
 
-    @Autowired
-    ContextRepository contextRepository;
+    private final ContextRepository contextRepository;
 
-    @Autowired
-    PhraseMapper phraseMapper = Mappers.getMapper(PhraseMapper.class);
-
-    @Override
-    public List<PhraseDto> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language) {
-        List<Phrase> phrases = phraseRepository.getPhrasesForWord(word, minRank, maxRank, Sort.by("id"));
-
-        List<PhraseDto> result = phrases.stream()
-                .map(phrase -> phraseMapper.phraseToDto(phrase))
-                .collect(Collectors.toList());
-        result = filterByLanguage(result, language);
-
-        return result;
+    public PhraseServiceImpl(PhraseRepository phraseRepository, ContextRepository contextRepository) {
+        this.phraseRepository = phraseRepository;
+        this.contextRepository = contextRepository;
     }
 
     @Override
-    public List<PhraseDto> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language) {
+    public List<Phrase> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language) {
+        List<Phrase> phrases = phraseRepository.getPhrasesForWord(word, minRank, maxRank, Sort.by("id"));
+        phrases = filterByLanguage(phrases, language);
+        return phrases;
+    }
+
+    @Override
+    public List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language) {
         List<Phrase> phrases = phraseRepository.getPhrasesByRanks(minRank, maxRank, Sort.by("id"));
-
-        List<PhraseDto> result = phrases.stream()
-                .map(phrase -> phraseMapper.phraseToDto(phrase))
-                .collect(Collectors.toList());
-        result = filterByLanguage(result, language);
-
-        return result;
+        phrases = filterByLanguage(phrases, language);
+        return phrases;
     }
 
     @Override
     @Transactional
-    public PhraseDto updatePhrase(PhraseUpdateDto phraseUpdateDto) {
+    public Phrase updatePhrase(PhraseUpdateDto phraseUpdateDto) {
 
         Phrase phrase = phraseRepository.getOne(phraseUpdateDto.getId());
         phrase.setRank(phraseUpdateDto.getRank());
@@ -78,14 +64,10 @@ public class PhraseServiceImpl implements PhraseService {
 
         translation.setValue(phraseUpdateDto.getTranslation());
 
-        phraseRepository.save(phrase);
-
-        PhraseDto phraseDto = phraseMapper.phraseToDto(phrase);
-
-        return phraseDto;
+        return phraseRepository.save(phrase);
     }
 
-    private List<PhraseDto> filterByLanguage(List<PhraseDto> list, String language) {
+    private List<Phrase> filterByLanguage(List<Phrase> list, String language) {
         return list.stream().peek(
                 ph -> ph.setTranslations(
                         ph.getTranslations().stream()
