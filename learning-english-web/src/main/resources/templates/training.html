@@ -347,7 +347,7 @@
             self.loadRecordByWord = function () {
                 let url = "";
                 // если не указано слово для поиска, то поиск идет по фразам входящим в диапазон minRank..maxRank
-                if (self.searchString() == "") {
+                if (self.searchString() === "") {
                     url = "http://localhost:8070/phrases/by/rank"
                 }
                 // если слово указано, то поиска идет по фразам отосящимся к данному слову в диапазоне фраз minRank..maxRank
@@ -480,12 +480,12 @@
                     $this.removeClass('correct')
                 }
 
-                if (event.keyCode == 113) {
+                if (event.keyCode === 113) {
                     let checkbox = $this.closest('tr')[0].getElementsByClassName('show_question')[0];
                     $(checkbox).trigger('click');
                 }
 
-                if (event.keyCode == 13) {
+                if (event.keyCode === 13) {
                     var actualVal = "";
                     tipColl = $this.closest('td')[0].getElementsByClassName('tip');
                     for (let i = 0; i < tipColl.length; i++) {
@@ -497,7 +497,7 @@
                     currentVal = currentVal.replace(/[,:;?.!]/g, "").replace(/[ ]{2,}/g, " ");
                     actualVal = actualVal.replace(/[,:;?.!]/g, "").replace(/[ ]{2,}/g, " ");
                     $this.closest('tr')[0].getElementsByClassName('music-button')[0].click();
-                    if (currentVal != actualVal) {
+                    if (currentVal !== actualVal) {
                         $this.addClass('invalid');
                         checkDiv.innerHTML = checkTranslate(actualVal, currentVal);
                     } else {
@@ -506,15 +506,13 @@
                     }
                 }
 
-                if (event.keyCode == 40) {
-                    let currentVal = Number($this.closest('tr')[0].getElementsByClassName('speed')[0].value) - 0.1;
-                    $this.closest('tr')[0].getElementsByClassName('speed')[0].value = currentVal;
+                if (event.keyCode === 40) {
+                    $this.closest('tr')[0].getElementsByClassName('speed')[0].value = Number($this.closest('tr')[0].getElementsByClassName('speed')[0].value) - 0.1;
                     $this.closest('tr')[0].getElementsByClassName('speed')[0].dispatchEvent(new Event("change"));
                 }
 
-                if (event.keyCode == 38) {
-                    let currentVal = Number($this.closest('tr')[0].getElementsByClassName('speed')[0].value) + 0.1;
-                    $this.closest('tr')[0].getElementsByClassName('speed')[0].value = currentVal;
+                if (event.keyCode === 38) {
+                    $this.closest('tr')[0].getElementsByClassName('speed')[0].value = Number($this.closest('tr')[0].getElementsByClassName('speed')[0].value) + 0.1;
                     $this.closest('tr')[0].getElementsByClassName('speed')[0].dispatchEvent(new Event("change"));
                 }
             };

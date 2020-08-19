@@ -1,12 +1,12 @@
 package by.zapolski.english.repository.dictionary;
 
-import by.zapolski.english.dictionary.domain.Dictionary;
+import by.zapolski.english.lemma.domain.Lemma;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface DictionaryRepository extends JpaRepository<Dictionary, Long> {
-    List<Dictionary> findByValue(String value);
+public interface DictionaryRepository extends JpaRepository<Lemma, Long> {
+    List<Lemma> findByValue(String value);
 
-    List<Dictionary> getByRank(Integer rank);
+    List<Lemma> getByRank(Integer rank);
 }

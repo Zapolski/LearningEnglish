@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Search results</title>
+
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="container-xl">
+    <h4 class="my-3">Search lemmas by value and similarity threshold</h4>
+    <form action="#" th:action="@{/lemma/search/by/similarity}" th:object="${searchRequest}" method="post">
+        <div>
+            <label for="word">Word</label>
+            <input type="text" th:field="*{word}" id="word" placeholder="Word" />
+            <span th:if="${#fields.hasErrors('word')}" th:errors="*{word}"></span>
+        </div>
+        <div>
+            <label for="threshold">Similarity threshold</label>
+            <input type="number" th:field="*{threshold}" id="threshold" placeholder="Similarity threshold" />
+            <span th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}"></span>
+        </div>
+        <input type="submit" value="Search by value and similarity threshold">
+    </form>
+    <hr>
+    <h4 class="my-3">Search lemmas by rank</h4>
+    <form action="#" th:action="@{/lemma/search/by/rank}" th:object="${searchLemmaRequestByRank}" method="post">
+        <div>
+            <label for="searchRank">Rank</label>
+            <input type="number" id="searchRank" th:field="*{searchRank}" placeholder="Rank" />
+            <span th:if="${#fields.hasErrors('searchRank')}" th:errors="*{searchRank}"></span>
+        </div>
+        <input type="submit" value="Search by rank">
+    </form>
+    <hr>
+    <div class="container my-3">
+        <form action="#" th:action="@{/lemma/add(word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchLemmaRequestByRank.searchRank})}" th:object="${lemma}" method="post">
+            <h4 class="my-3">Add new lemma to lemma</h4>
+            <p><span th:text="${messageResult}">[adding status]</span></p>
+            <div>
+                <label for="value">Word: </label>
+                <input type="text" th:field="*{value}" id="value" placeholder="Word" />
+                <span th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></span>
+            </div>
+            <div>
+                <label for="addRank">Rank: </label>
+                <input type="text" th:field="*{rank}" id="addRank" placeholder="Rank" />
+                <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
+            </div>
+            <div>
+                <label for="partOfSpeech">Part of speech: </label>
+                <input type="text" th:field="*{partOfSpeech}" id="partOfSpeech" placeholder="Part of speech" />
+                <span th:if="${#fields.hasErrors('partOfSpeech')}" th:errors="*{partOfSpeech}"></span>
+            </div>
+            <input type="submit" value="Add">
+        </form>
+    </div>
+    <hr>
+</div>
+
+<div th:switch="${lemmas}" class="container-xl">
+    <p></p>
+    <div th:case="null">
+        <p>Found records: <span th:text="0">[Number of Elements]</span></p>
+    </div>
+    <div th:case="*">
+        <p>Found records: <span th:text="${#lists.size(lemmas)}">[Number of Elements]</span></p>
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2>Search result list</h2>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Value</th>
+                        <th>Rank</th>
+                        <th>PoS</th>
+                        <th>Similarity, %</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="lemma : ${lemmas}">
+                        <td th:text="${lemma.value}"></td>
+                        <td th:text="${lemma.rank}"></td>
+                        <td th:text="${lemma.partOfSpeech}"></td>
+                        <td th:text="${lemma.similarity}"></td>
+                        <td>
+                            <a th:href="@{/lemma/edit(id=${lemma.id},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchLemmaRequestByRank.searchRank})}" class="edit">
+                                <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                            </a>
+                            <a th:href="@{/lemma/delete(id=${lemma.id},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchLemmaRequestByRank.searchRank})}" class="delete" id="deleteButton">
+                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal HTML -->
+<div id="deleteLemmaModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form>
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Lemma</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this record?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <a href="" class="btn btn-danger" id="delRef">Delete</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script src="/js/lemma.js"></script>
+<link rel="stylesheet" href="/css/lemma.css">
+
+</html>

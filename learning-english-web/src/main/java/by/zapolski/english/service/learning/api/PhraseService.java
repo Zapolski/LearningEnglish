@@ -1,7 +1,6 @@
 package by.zapolski.english.service.learning.api;
 
-import by.zapolski.english.dictionary.dto.PhraseUpdateDto;
-import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.dto.PhraseDto;
 import org.springframework.stereotype.Service;
 

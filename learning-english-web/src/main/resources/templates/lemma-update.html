@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Update</title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/lemma.css">
+</head>
+
+<body>
+<div class="container my-3">
+    <form action="#"
+          th:action="@{/lemma/update(word=${param.word},threshold=${param.threshold},searchRank=${param.searchRank})}"
+          th:object="${lemma}" method="post">
+        <h4 class="my-3">Update lemma in lemma</h4>
+        <div>
+            <input type="hidden" th:field="*{id}" id="id"/>
+        </div>
+        <div>
+            <label for="value">Word: </label>
+            <input type="text" th:field="*{value}" id="value" placeholder="Word"/>
+            <span th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></span>
+        </div>
+        <div>
+            <label for="rank">Rank: </label>
+            <input type="text" th:field="*{rank}" id="rank" placeholder="Rank"/>
+            <span th:if="${#fields.hasErrors('rank')}" th:errors="*{rank}"></span>
+        </div>
+        <div>
+            <label for="partOfSpeech">Part of speech: </label>
+            <input type="text" th:field="*{partOfSpeech}" id="partOfSpeech" placeholder="Part of speech"/>
+            <span th:if="${#fields.hasErrors('partOfSpeech')}" th:errors="*{partOfSpeech}"></span>
+        </div>
+        <input type="submit" value="Update">
+    </form>
+    <a href="/lemma/search" class="my-3">Back to search</a>
+</div>
+</body>
+
+</html>

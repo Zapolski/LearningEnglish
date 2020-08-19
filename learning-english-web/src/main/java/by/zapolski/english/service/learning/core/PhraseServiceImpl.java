@@ -1,6 +1,6 @@
 package by.zapolski.english.service.learning.core;
 
-import by.zapolski.english.dictionary.dto.PhraseUpdateDto;
+import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.domain.Context;
 import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.learning.domain.Translation;

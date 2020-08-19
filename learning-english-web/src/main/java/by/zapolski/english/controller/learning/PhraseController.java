@@ -1,7 +1,6 @@
 package by.zapolski.english.controller.learning;
 
-import by.zapolski.english.dictionary.dto.PhraseUpdateDto;
-import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.service.learning.api.PhraseService;
 import org.springframework.beans.factory.annotation.Autowired;
