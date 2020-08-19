@@ -1,6 +1,6 @@
 package by.zapolski.english.service.lemma.api;
 
-import by.zapolski.english.lemma.dto.LemmaDto;
+import by.zapolski.english.lemma.domain.Lemma;
 import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
 import org.springframework.stereotype.Service;
 
@@ -13,21 +13,21 @@ import java.util.List;
 public interface LemmaService {
 
     /**
-     * Опеределяет список слов похожих на искомо с определенной точностью
+     * Опеределяет список слов похожих на искомое с определенным процентом схожести
      *
-     * @param word искомое солов
+     * @param word      искомое солов
      * @param threshold точность схожести в процентах
      * @return список слов из словаря
      */
     List<LemmaWithSimilarityDto> getSimilarWordsWithAccuracyThreshold(String word, Integer threshold);
 
-    LemmaDto save(LemmaDto wordWithFrequency);
+    Lemma save(Lemma wordWithFrequency);
 
-    void delete(LemmaDto lemmaDto);
+    void delete(Lemma lemmaDto);
 
     void deleteById(Long id);
 
-    LemmaDto getById(Long id);
+    Lemma getById(Long id);
 
-    List<LemmaDto> getByRank(Integer rank);
+    List<Lemma> getByRank(Integer rank);
 }

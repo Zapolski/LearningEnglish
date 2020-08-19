@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface DictionaryRepository extends JpaRepository<Lemma, Long> {
+public interface LemmaRepository extends JpaRepository<Lemma, Long> {
     List<Lemma> findByValue(String value);
 
     List<Lemma> getByRank(Integer rank);

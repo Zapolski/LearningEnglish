@@ -1,14 +1,16 @@
 package by.zapolski.english.controller.lemma.web;
 
+import by.zapolski.english.lemma.domain.Lemma;
 import by.zapolski.english.lemma.dto.LemmaDto;
 import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
 import by.zapolski.english.lemma.dto.SearchLemmaRequest;
 import by.zapolski.english.lemma.dto.SearchLemmaRequestByRank;
-import by.zapolski.english.service.lemma.api.LemmaService;
+import by.zapolski.english.lemma.mapper.LemmaMapper;
 import by.zapolski.english.service.learning.core.loader.DbLoaderServiceImpl;
+import by.zapolski.english.service.lemma.api.LemmaService;
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,9 +28,13 @@ import java.util.stream.Collectors;
 public class LemmaMvcController {
 
     private static final Logger log = LoggerFactory.getLogger(DbLoaderServiceImpl.class);
+    private final LemmaMapper lemmaMapper = Mappers.getMapper(LemmaMapper.class);
 
-    @Autowired
-    LemmaService lemmaService;
+    final LemmaService lemmaService;
+
+    public LemmaMvcController(LemmaService lemmaService) {
+        this.lemmaService = lemmaService;
+    }
 
     @GetMapping("/lemma/search")
     public String search(
@@ -45,10 +51,16 @@ public class LemmaMvcController {
         }
 
         if (searchLemmaRequestByRank.getSearchRank() != null) {
-            List<LemmaDto> dtoList = lemmaService.getByRank(searchLemmaRequestByRank.getSearchRank());
+            List<Lemma> lemmaList = lemmaService.getByRank(searchLemmaRequestByRank.getSearchRank());
+
+            List<LemmaDto> dtoList = lemmaList.stream()
+                    .map(lemmaMapper::lemmaToDto)
+                    .collect(Collectors.toList());
+
             List<LemmaWithSimilarityDto> result = dtoList.stream()
                     .map(d -> new LemmaWithSimilarityDto(d.getId(), d.getValue(), d.getRank(), d.getPartOfSpeech(), 100d))
                     .collect(Collectors.toList());
+
             model.addAttribute("lemmas", result);
         }
 
@@ -108,7 +120,7 @@ public class LemmaMvcController {
         }
         redirectAttributes.addFlashAttribute("searchRequest", new SearchLemmaRequest(word, threshold));
         redirectAttributes.addFlashAttribute("searchLemmaRequestByRank", new SearchLemmaRequestByRank(searchRank));
-        lemmaService.save(lemmaDto);
+        lemmaService.save(lemmaMapper.dtoToLemma(lemmaDto));
         return "redirect:/lemma/search";
     }
 
@@ -120,7 +132,7 @@ public class LemmaMvcController {
             @RequestParam(value = "id") long id,
             Model model
     ) {
-        LemmaDto lemmaDto = lemmaService.getById(id);
+        LemmaDto lemmaDto = lemmaMapper.lemmaToDto(lemmaService.getById(id));
         model.addAttribute("lemma", lemmaDto);
         model.addAttribute("word", word);
         model.addAttribute("threshold", threshold);
@@ -146,7 +158,7 @@ public class LemmaMvcController {
         }
 
         log.info("{}", lemmaDto);
-        lemmaService.save(lemmaDto);
+        lemmaService.save(lemmaMapper.dtoToLemma(lemmaDto));
         redirectAttributes.addFlashAttribute("searchRequest", new SearchLemmaRequest(word, threshold));
         redirectAttributes.addFlashAttribute("searchLemmaRequestByRank", new SearchLemmaRequestByRank(searchRank));
         return "redirect:/lemma/search";

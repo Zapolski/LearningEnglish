@@ -4,7 +4,7 @@ import by.zapolski.english.lemma.domain.Lemma;
 import by.zapolski.english.lemma.dto.LemmaDto;
 import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
 import by.zapolski.english.lemma.mapper.LemmaMapper;
-import by.zapolski.english.repository.dictionary.DictionaryRepository;
+import by.zapolski.english.repository.dictionary.LemmaRepository;
 import by.zapolski.english.service.lemma.api.LemmaService;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.mapstruct.factory.Mappers;
@@ -19,32 +19,29 @@ import java.util.stream.Collectors;
 @Service
 public class LemmaServiceImpl implements LemmaService {
 
-    private LemmaMapper lemmaMapper = Mappers.getMapper(LemmaMapper.class);
+    private final LemmaRepository lemmaRepository;
 
-    @Autowired
-    private DictionaryRepository dictionaryRepository;
+    public LemmaServiceImpl(LemmaRepository lemmaRepository) {
+        this.lemmaRepository = lemmaRepository;
+    }
 
     @Override
     public List<LemmaWithSimilarityDto> getSimilarWordsWithAccuracyThreshold(String word, Integer threshold) {
         List<LemmaWithSimilarityDto> result = new ArrayList<>();
         JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
 
-        List<Lemma> wordList = dictionaryRepository.findAll();
+        List<Lemma> wordList = lemmaRepository.findAll();
 
         for (Lemma lemma : wordList) {
-            Double currentThreshold = jaroWinklerSimilarity.apply(word, lemma.getValue()) * 100;
-
+            double currentThreshold = jaroWinklerSimilarity.apply(word, lemma.getValue()) * 100;
             currentThreshold = Math.round(currentThreshold * 10d) / 10d;
-
             if (currentThreshold >= threshold) {
                 LemmaWithSimilarityDto lemmaWithSimilarityDto = new LemmaWithSimilarityDto();
-
                 lemmaWithSimilarityDto.setSimilarity(currentThreshold);
                 lemmaWithSimilarityDto.setId(lemma.getId());
                 lemmaWithSimilarityDto.setPartOfSpeech(lemma.getPartOfSpeech());
                 lemmaWithSimilarityDto.setRank(lemma.getRank());
                 lemmaWithSimilarityDto.setValue(lemma.getValue());
-
                 result.add(lemmaWithSimilarityDto);
             }
         }
@@ -56,35 +53,28 @@ public class LemmaServiceImpl implements LemmaService {
     }
 
     @Override
-    public LemmaDto save(LemmaDto lemmaDto) {
-        Lemma lemma = lemmaMapper.dtoToLemma(lemmaDto);
-        dictionaryRepository.save(lemma);
-        return lemmaMapper.lemmaToDto(lemma);
+    public Lemma save(Lemma lemma) {
+        return lemmaRepository.save(lemma);
     }
 
     @Override
-    public void delete(LemmaDto lemmaDto) {
-        Lemma lemma = lemmaMapper.dtoToLemma(lemmaDto);
-        dictionaryRepository.delete(lemma);
+    public void delete(Lemma lemma) {
+        lemmaRepository.delete(lemma);
     }
 
     @Override
     public void deleteById(Long id) {
-        dictionaryRepository.deleteById(id);
+        lemmaRepository.deleteById(id);
     }
 
     @Override
-    public LemmaDto getById(Long id) {
-        Lemma lemma = dictionaryRepository.getOne(id);
-        return lemmaMapper.lemmaToDto(lemma);
+    public Lemma getById(Long id) {
+        return lemmaRepository.getOne(id);
     }
 
     @Override
-    public List<LemmaDto> getByRank(Integer rank) {
-        List<Lemma> result = dictionaryRepository.getByRank(rank);
-        return result.stream()
-                .map(dictionary -> lemmaMapper.lemmaToDto(dictionary))
-                .collect(Collectors.toList());
+    public List<Lemma> getByRank(Integer rank) {
+        return lemmaRepository.getByRank(rank);
     }
 
 }

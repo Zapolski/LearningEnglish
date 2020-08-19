@@ -1,6 +1,6 @@
 package by.zapolski.english.service.learning.api;
 
-import by.zapolski.english.learning.dto.WordDto;
+import by.zapolski.english.learning.domain.Word;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +10,5 @@ import java.util.List;
  */
 @Service
 public interface WordService {
-
-    List<WordDto> getAll();
+    List<Word> getAll();
 }

@@ -2,7 +2,7 @@ package by.zapolski.english.service.lemma.core;
 
 import by.zapolski.english.lemma.domain.Lemma;
 import by.zapolski.english.lemma.dto.SentenceInfoDto;
-import by.zapolski.english.repository.dictionary.DictionaryRepository;
+import by.zapolski.english.repository.dictionary.LemmaRepository;
 import by.zapolski.english.service.lemma.api.SentenceService;
 import opennlp.tools.lemmatizer.DictionaryLemmatizer;
 import opennlp.tools.postag.POSTaggerME;
@@ -25,7 +25,7 @@ public class SentenceServiceImpl implements SentenceService {
     private DictionaryLemmatizer lemmatizer;
 
     @Autowired
-    private DictionaryRepository dictionaryRepository;
+    private LemmaRepository lemmaRepository;
 
     @Override
     public SentenceInfoDto getSentenceInfo(String sentence) {
@@ -42,7 +42,7 @@ public class SentenceServiceImpl implements SentenceService {
         int index = 0;
         for (String lemma : sentenceInfo.getLemmas()) {
             if (!"O".equals(lemma)) {
-                List<Lemma> wordList = dictionaryRepository.findByValue(lemma);
+                List<Lemma> wordList = lemmaRepository.findByValue(lemma);
                 Optional<Lemma> optional = wordList.stream().min(Comparator.comparingInt(Lemma::getRank));
                 int currentRank = optional.isPresent() ? optional.get().getRank() : 0;
                 ranks[index] = currentRank;
