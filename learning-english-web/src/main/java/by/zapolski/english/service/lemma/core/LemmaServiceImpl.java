@@ -1,23 +1,19 @@
 package by.zapolski.english.service.lemma.core;
 
 import by.zapolski.english.lemma.domain.Lemma;
-import by.zapolski.english.lemma.dto.LemmaDto;
 import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
-import by.zapolski.english.lemma.mapper.LemmaMapper;
 import by.zapolski.english.repository.dictionary.LemmaRepository;
+import by.zapolski.english.service.CrudBaseServiceImpl;
 import by.zapolski.english.service.lemma.api.LemmaService;
-import org.apache.commons.text.similarity.JaroWinklerSimilarity;
-import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.text.similarity.JaroWinklerSimilarity;
+import org.springframework.stereotype.Service;
 
 @Service
-public class LemmaServiceImpl implements LemmaService {
+public class LemmaServiceImpl extends CrudBaseServiceImpl<Lemma, Long> implements LemmaService {
 
     private final LemmaRepository lemmaRepository;
 
@@ -30,7 +26,7 @@ public class LemmaServiceImpl implements LemmaService {
         List<LemmaWithSimilarityDto> result = new ArrayList<>();
         JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
 
-        List<Lemma> wordList = lemmaRepository.findAll();
+        List<Lemma> wordList = getAll();
 
         for (Lemma lemma : wordList) {
             double currentThreshold = jaroWinklerSimilarity.apply(word, lemma.getValue()) * 100;
@@ -50,26 +46,6 @@ public class LemmaServiceImpl implements LemmaService {
                         .reversed()
                         .thenComparing(LemmaWithSimilarityDto::getRank)
         ).collect(Collectors.toList());
-    }
-
-    @Override
-    public Lemma save(Lemma lemma) {
-        return lemmaRepository.save(lemma);
-    }
-
-    @Override
-    public void delete(Lemma lemma) {
-        lemmaRepository.delete(lemma);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        lemmaRepository.deleteById(id);
-    }
-
-    @Override
-    public Lemma getById(Long id) {
-        return lemmaRepository.getOne(id);
     }
 
     @Override

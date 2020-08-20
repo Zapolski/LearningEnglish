@@ -2,15 +2,15 @@ package by.zapolski.english.service.lemma.api;
 
 import by.zapolski.english.lemma.domain.Lemma;
 import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
-import org.springframework.stereotype.Service;
-
+import by.zapolski.english.service.CrudBaseService;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 /**
  * Сервис для работы со словарем
  */
 @Service
-public interface LemmaService {
+public interface LemmaService extends CrudBaseService<Lemma, Long> {
 
     /**
      * Опеределяет список слов похожих на искомое с определенным процентом схожести
@@ -21,13 +21,11 @@ public interface LemmaService {
      */
     List<LemmaWithSimilarityDto> getSimilarWordsWithAccuracyThreshold(String word, Integer threshold);
 
-    Lemma save(Lemma wordWithFrequency);
-
-    void delete(Lemma lemmaDto);
-
-    void deleteById(Long id);
-
-    Lemma getById(Long id);
-
+    /**
+     * Получение списка лемм по рангу
+     *
+     * @param rank ранг
+     * @return список лемм по рангку
+     */
     List<Lemma> getByRank(Integer rank);
 }

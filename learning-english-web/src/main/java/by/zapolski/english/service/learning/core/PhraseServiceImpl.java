@@ -6,17 +6,17 @@ import by.zapolski.english.learning.domain.Translation;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.repository.learning.ContextRepository;
 import by.zapolski.english.repository.learning.PhraseRepository;
+import by.zapolski.english.service.CrudBaseServiceImpl;
 import by.zapolski.english.service.learning.api.PhraseService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
-public class PhraseServiceImpl implements PhraseService {
+public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> implements PhraseService {
 
     private final PhraseRepository phraseRepository;
 
@@ -45,7 +45,7 @@ public class PhraseServiceImpl implements PhraseService {
     @Transactional
     public Phrase updatePhrase(PhraseUpdateDto phraseUpdateDto) {
 
-        Phrase phrase = phraseRepository.getOne(phraseUpdateDto.getId());
+        Phrase phrase = getById(phraseUpdateDto.getId());
         phrase.setRank(phraseUpdateDto.getRank());
         phrase.setValue(phraseUpdateDto.getEnglish());
 
@@ -64,7 +64,7 @@ public class PhraseServiceImpl implements PhraseService {
 
         translation.setValue(phraseUpdateDto.getTranslation());
 
-        return phraseRepository.save(phrase);
+        return save(phrase);
     }
 
     private List<Phrase> filterByLanguage(List<Phrase> list, String language) {
