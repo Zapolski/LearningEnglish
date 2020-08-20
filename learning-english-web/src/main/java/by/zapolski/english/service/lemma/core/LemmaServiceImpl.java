@@ -10,6 +10,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,6 +46,16 @@ public class LemmaServiceImpl extends CrudBaseServiceImpl<Lemma, Long> implement
                 result.add(lemmaWithSimilarityDto);
             }
         }
+
+//        Pageable pageable = PageRequest.of(0,10);
+//        result  = result.stream().sorted(
+//                Comparator.comparingDouble(LemmaWithSimilarityDto::getSimilarity)
+//                        .reversed()
+//                        .thenComparing(LemmaWithSimilarityDto::getRank)
+//        ).collect(Collectors.toList());
+//        Page<LemmaWithSimilarityDto> page = new PageImpl<>(result, pageable, result.size());
+
+
         return result.stream().sorted(
                 Comparator.comparingDouble(LemmaWithSimilarityDto::getSimilarity)
                         .reversed()

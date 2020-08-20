@@ -1,4 +1,4 @@
-package by.zapolski.english.config.lemma;
+package by.zapolski.english.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
