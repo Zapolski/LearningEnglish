@@ -8,9 +8,17 @@ import by.zapolski.english.lemma.dto.SearchLemmaRequestByRank;
 import by.zapolski.english.lemma.mapper.LemmaMapper;
 import by.zapolski.english.service.learning.core.loader.DbLoaderServiceImpl;
 import by.zapolski.english.service.lemma.api.LemmaService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,10 +27,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class LemmaMvcController {
@@ -38,16 +42,19 @@ public class LemmaMvcController {
 
     @GetMapping("/lemma/search")
     public String search(
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
             @ModelAttribute("searchRequest") SearchLemmaRequest searchLemmaRequest,
             @ModelAttribute("searchLemmaRequestByRank") SearchLemmaRequestByRank searchLemmaRequestByRank,
             @ModelAttribute("lemma") LemmaDto lemmaDto,
             Model model) {
 
+        List<LemmaWithSimilarityDto> result = new ArrayList<>();
+
         if (searchLemmaRequest.getWord() != null && !searchLemmaRequest.getWord().isEmpty()) {
-            List<LemmaWithSimilarityDto> result = lemmaService.getSimilarWordsWithAccuracyThreshold(
+            result = lemmaService.getSimilarWordsWithAccuracyThreshold(
                     searchLemmaRequest.getWord(),
                     searchLemmaRequest.getThreshold());
-            model.addAttribute("lemmas", result);
         }
 
         if (searchLemmaRequestByRank.getSearchRank() != null) {
@@ -57,12 +64,18 @@ public class LemmaMvcController {
                     .map(lemmaMapper::lemmaToDto)
                     .collect(Collectors.toList());
 
-            List<LemmaWithSimilarityDto> result = dtoList.stream()
+            result = dtoList.stream()
                     .map(d -> new LemmaWithSimilarityDto(d.getId(), d.getValue(), d.getRank(), d.getPartOfSpeech(), 100d))
                     .collect(Collectors.toList());
-
-            model.addAttribute("lemmas", result);
         }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), result.size());
+
+        Page<LemmaWithSimilarityDto> pageWithLemmas = new PageImpl<>(result.subList(start, end), pageable, result.size());
+        model.addAttribute("lemmas", pageWithLemmas);
 
         return "lemma-search";
     }

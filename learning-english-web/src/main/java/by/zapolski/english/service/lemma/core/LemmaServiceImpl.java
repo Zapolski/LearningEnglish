@@ -47,15 +47,6 @@ public class LemmaServiceImpl extends CrudBaseServiceImpl<Lemma, Long> implement
             }
         }
 
-//        Pageable pageable = PageRequest.of(0,10);
-//        result  = result.stream().sorted(
-//                Comparator.comparingDouble(LemmaWithSimilarityDto::getSimilarity)
-//                        .reversed()
-//                        .thenComparing(LemmaWithSimilarityDto::getRank)
-//        ).collect(Collectors.toList());
-//        Page<LemmaWithSimilarityDto> page = new PageImpl<>(result, pageable, result.size());
-
-
         return result.stream().sorted(
                 Comparator.comparingDouble(LemmaWithSimilarityDto::getSimilarity)
                         .reversed()
