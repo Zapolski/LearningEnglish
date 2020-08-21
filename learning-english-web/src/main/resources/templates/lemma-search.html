@@ -124,19 +124,19 @@
         <ul class="pagination justify-content-center font-weight-bold">
             <li class="page-item" th:classappend="${lemmas.number eq 0} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/lemma/search?page={id}(id=${lemmas.number lt 2 ? 1 : lemmas.number})}"
+                   th:href="@{/lemma/search(page=${lemmas.number lt 1 ? 0 : lemmas.number - 1},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchLemmaRequestByRank.searchRank})}"
                    aria-label="Previous" title="Previous Page" data-toggle="tooltip">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
             <li class="page-item" th:classappend="${i eq lemmas.number + 1} ? 'active'"
                 th:each="i : ${#numbers.sequence( 1, lemmas.totalPages, 1)}">
-                <a class="page-link" th:href="@{/lemma/search?page={id}(id=${i-1})}" th:text="${i}"
+                <a class="page-link" th:href="@{/lemma/search(page=${i-1},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchLemmaRequestByRank.searchRank})}" th:text="${i}"
                    th:title="${'Page '+ i}" data-toggle="tooltip"></a>
             </li>
             <li class="page-item" th:classappend="${lemmas.number + 1 eq lemmas.totalPages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/lemma/search?page={id}(id=${lemmas.number + 2})}"
+                   th:href="@{/lemma/search(page=${lemmas.number + 1},word=${searchRequest.word},threshold=${searchRequest.threshold},searchRank=${searchLemmaRequestByRank.searchRank})}"
                    aria-label="Next" title="Next Page" data-toggle="tooltip">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
