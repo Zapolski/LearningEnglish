@@ -7,6 +7,7 @@
 6) тесты для контроллеров
 7) backup базы фраз
 8) backup базы лемм
+9) swagger
 
 
 посмотреть ThreadLocal
