@@ -167,14 +167,19 @@
                             </div>
                         </td>
                         <td class="center">
-                            <a data-bind="event: {click: $parent.musicButtonClick}" class="music-button"><img
-                                    src="img/player_play.png"></a>
-                            <audio data-bind="attr: {src: 'audio/'+ $data.word() + '/' + $data.soundPath()}"
-                                class="player" type="audio/mpeg"></audio>
-                            <br><input
-                                data-bind="event: {change: $parent.inputRangeInputAndChange, input: $parent.inputRangeInputAndChange}"
-                                type="range" step="0.1" min="0.2" max="2" value="1" class="speed" />
-                            <br><span class="speed-text">1.0</span>
+                            <div data-bind="if: $parent.isUrlExists('audio/'+ $data.word() + '/' + $data.soundPath())">
+                                <a data-bind="event: {click: $parent.musicButtonClick}" class="music-button"><img
+                                        src="img/player_play.png"></a>
+                                <audio data-bind="attr: {src: 'audio/'+ $data.word() + '/' + $data.soundPath()}"
+                                    class="player" type="audio/mpeg"></audio>
+                                <br><input
+                                    data-bind="event: {change: $parent.inputRangeInputAndChange, input: $parent.inputRangeInputAndChange}"
+                                    type="range" step="0.1" min="0.2" max="2" value="1" class="speed" />
+                                <br><span class="speed-text">1.0</span>
+                            </div>
+                            <div data-bind="if: !$parent.isUrlExists('audio/'+ $data.word() + '/' + $data.soundPath())">
+                                <span>No audio</span>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -552,6 +557,14 @@
             self.getTranslationWithFirstUpperLetter = function (translation) {
                 return getWithFirstUpperCase(translation)
             };
+
+            self.isUrlExists = function (url)
+            {
+                var http = new XMLHttpRequest();
+                http.open('HEAD', url, false);
+                http.send();
+                return http.status == 200;
+            }
 
             // init events
             self.loadAllAvailableWord();
