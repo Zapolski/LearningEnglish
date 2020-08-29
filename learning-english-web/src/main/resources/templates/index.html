@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Learning English</title>
+    <link rel="shortcut icon" href="/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div class="container my-3">
+    <h1>Learning English with native speakers</h1>
+
+    <h3>Welcome, <span th:text="${userName} ?: 'quest'"></span>!</h3>
+
+    <div class="container my-3">
+        <div th:if="!${authenticated}">
+            <h4><a href="/login">Log in</a></h4>
+            <h4><a href="/registration">Registration</a></h4>
+        </div>
+
+        <div th:if="${authenticated}">
+            <h4><a href="/logout">Log out</a></h4>
+        </div>
+
+        <h4><a href="/training">Training (only for registered users)</a></h4>
+        <h4><a href="/lemma/search">Lemma search (only for registered users)</a></h4>
+        <h4><a href="/admin/users">Users list (only for administrators)</a></h4>
+    </div>
+</div>
+</body>
+
+</html>

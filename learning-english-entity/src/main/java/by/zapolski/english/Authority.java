@@ -1,20 +1,18 @@
 package by.zapolski.english;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+
+import javax.persistence.*;
+import java.util.Set;
 
 
 @Entity
 @Table(name = "authorities")
 @Data
 @NoArgsConstructor
-public class Authority {
+public class Authority implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +24,15 @@ public class Authority {
     )
     private String value;
 
+    @Transient
+    @ManyToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "authorities"
+    )
+    private Set<User> users;
+
+    @Override
+    public String getAuthority() {
+        return value;
+    }
 }

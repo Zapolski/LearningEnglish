@@ -1,9 +1,10 @@
-package by.zapolski.english.repository;
+package by.zapolski.english.repository.security;
 
 import by.zapolski.english.User;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User,Long> {
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUserName(String userName);
 }
