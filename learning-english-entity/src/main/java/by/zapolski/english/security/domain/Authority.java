@@ -1,4 +1,4 @@
-package by.zapolski.english;
+package by.zapolski.english.security.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

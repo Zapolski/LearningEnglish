@@ -1,6 +1,6 @@
 package by.zapolski.english.repository.security;
 
-import by.zapolski.english.User;
+import by.zapolski.english.security.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -22,18 +22,17 @@
     <h3>Welcome, <span th:text="${userName} ?: 'quest'"></span>!</h3>
 
     <div class="container my-3">
-        <div th:if="!${authenticated}">
+        <div th:if="!${logged}">
             <h4><a href="/login">Log in</a></h4>
             <h4><a href="/registration">Registration</a></h4>
         </div>
 
-        <div th:if="${authenticated}">
+        <div th:if="${logged}">
             <h4><a href="/logout">Log out</a></h4>
         </div>
 
         <h4><a href="/training">Training (only for registered users)</a></h4>
-        <h4><a href="/lemma/search">Lemma search (only for registered users)</a></h4>
-        <h4><a href="/admin/users">Users list (only for administrators)</a></h4>
+        <h4><a href="/lemma/search">Lemma search (only for registered administrators)</a></h4>
     </div>
 </div>
 </body>

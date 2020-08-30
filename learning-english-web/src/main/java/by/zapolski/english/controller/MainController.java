@@ -1,4 +1,4 @@
-package by.zapolski.english.controller.lemma.web;
+package by.zapolski.english.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,9 +17,13 @@ public class MainController {
     @GetMapping("/")
     public String index(Model model) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails){
-            model.addAttribute("userName", ((UserDetails)principal).getUsername());
+        if (principal instanceof UserDetails) {
+            model.addAttribute("userName", ((UserDetails) principal).getUsername());
+            model.addAttribute("logged", true);
+        } else {
+            model.addAttribute("logged", false);
         }
+
         return "index";
     }
 

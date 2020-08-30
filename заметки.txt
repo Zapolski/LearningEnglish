@@ -17,3 +17,7 @@
 select max(id) from lemma
 смещаем sequence на maxId+1
 select setval('lemma_id_seq', 53166)
+
+Добавление ролей
+insert into authorities (value)
+values ('ROLE_ADMIN'),('ROLE_USER')
