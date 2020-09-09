@@ -10,13 +10,13 @@ import javax.validation.constraints.NotNull;
 public class LemmaDto {
     private Long id;
 
-    @NotBlank(message = "Can't be blank")
+    @NotBlank(message = "Can not be blank")
     private String value;
 
-    @NotNull(message = "Can't be blank")
+    @NotNull(message = "Can not be blank")
     @Min(value = 1, message = "Value must be more than zero")
     private Integer rank;
 
-    @NotNull(message = "Can't be blank")
+    @NotNull(message = "Can not be blank")
     private Character partOfSpeech;
 }

@@ -8,10 +8,6 @@ import by.zapolski.english.lemma.dto.SearchLemmaRequestByRank;
 import by.zapolski.english.lemma.mapper.LemmaMapper;
 import by.zapolski.english.service.learning.core.loader.DbLoaderServiceImpl;
 import by.zapolski.english.service.lemma.api.LemmaService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +23,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class LemmaMvcController {
@@ -92,6 +93,7 @@ public class LemmaMvcController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("searchLemmaRequestByRank", searchLemmaRequestByRank);
             model.addAttribute("lemma", lemmaDto);
+            model.addAttribute("lemmas", Page.empty());
             return "lemma-search";
         }
         redirectAttributes.addFlashAttribute("searchRequest", searchRequest);
@@ -110,6 +112,7 @@ public class LemmaMvcController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("searchRequest", searchRequest);
             model.addAttribute("lemma", lemmaDto);
+            model.addAttribute("lemmas", Page.empty());
             return "lemma-search";
         }
         redirectAttributes.addFlashAttribute("searchLemmaRequestByRank", searchLemmaRequestByRank);
@@ -129,6 +132,7 @@ public class LemmaMvcController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("searchRequest", new SearchLemmaRequest(word, threshold));
             model.addAttribute("searchLemmaRequestByRank", new SearchLemmaRequestByRank(searchRank));
+            model.addAttribute("lemmas", Page.empty());
             return "lemma-search";
         }
         redirectAttributes.addFlashAttribute("searchRequest", new SearchLemmaRequest(word, threshold));

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class SearchLemmaRequestByRank {
 
-    @NotNull(message = "Can't be empty")
+    @NotNull(message = "Can not be empty")
     @Min(value = 0, message = "Value must be more than 0")
     private Integer searchRank;
 }

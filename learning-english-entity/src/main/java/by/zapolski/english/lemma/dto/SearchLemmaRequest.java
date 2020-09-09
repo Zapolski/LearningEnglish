@@ -14,10 +14,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class SearchLemmaRequest {
 
-    @NotBlank(message = "Can't be blank")
+    @NotBlank(message = "Can not be blank")
     private String word;
 
-    @NotNull(message = "Can't be empty")
+    @NotNull(message = "Can not be empty")
     @Min(value = 1, message = "Value must be from 1 to 100")
     @Max(value = 100, message = "Value must be from 1 to 100")
     private Integer threshold;

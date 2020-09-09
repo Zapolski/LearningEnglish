@@ -32,6 +32,8 @@
     <modules>
         <module>learning-english-web</module>
         <module>learning-english-entity</module>
+        <module>learning-english-service</module>
+        <module>learning-english-repository</module>
     </modules>
 
     <dependencyManagement>
