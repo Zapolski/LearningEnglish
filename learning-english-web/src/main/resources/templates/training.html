@@ -113,7 +113,7 @@
                                 info</button>
 
                             <div data-bind="visible: ($data.mode() === 'edit')">
-                                <label>Word</label>
+                                <label>Word</label> <a target="_blank" data-bind="attr: {href: 'https://www.ldoceonline.com/dictionary/' + $parent.newWord()}" >(source page)</a>
                                 <input data-bind="value: $parent.newWord" type="text" class='input-field' readonly><br>
                                 <label>Translation</label>
                                 <input data-bind="value: $parent.newTranslation" type="text" class='input-field'><br>
@@ -499,8 +499,8 @@
                     actualVal = actualVal.replace(/[\[\]]/g, "");
                     var currentVal = $this.val();
                     var checkDiv = $this.closest('td')[0].getElementsByClassName('check')[0];
-                    currentVal = currentVal.replace(/[,:;?.!]/g, "").replace(/[ ]{2,}/g, " ");
-                    actualVal = actualVal.replace(/[,:;?.!]/g, "").replace(/[ ]{2,}/g, " ");
+                    currentVal = currentVal.replace(/[,:;?.!–]/g, "").replace(/[ ]{2,}/g, " ");
+                    actualVal = actualVal.replace(/[,:;?.!–]/g, "").replace(/[ ]{2,}/g, " ");
                     $this.closest('tr')[0].getElementsByClassName('music-button')[0].click();
                     if (currentVal !== actualVal) {
                         $this.addClass('invalid');
