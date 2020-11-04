@@ -1,7 +1,7 @@
 package by.zapolski.english.repository;
 
 import by.zapolski.english.learning.domain.Resource;
-import by.zapolski.english.learning.domain.StorageType;
+import by.zapolski.english.learning.domain.enums.StorageType;
 import by.zapolski.english.repository.learning.ResourceRepository;
 import org.junit.Before;
 import org.junit.Test;

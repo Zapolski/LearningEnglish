@@ -1,4 +1,4 @@
-package by.zapolski.english.learning.domain;
+package by.zapolski.english.learning.domain.enums;
 
 /**
  * Перечисления для хранения видов поддерживаемых хранилищ

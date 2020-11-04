@@ -3,6 +3,7 @@ package by.zapolski.english.learning.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(of = "value")
 @NoArgsConstructor
+@BatchSize(size = 10)
 public class Context implements Serializable {
 
     @Id

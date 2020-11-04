@@ -3,6 +3,7 @@ package by.zapolski.english.learning.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(of = "value")
+@BatchSize(size = 10)
 public class Word implements Serializable {
 
     @Id

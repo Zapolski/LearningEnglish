@@ -1,5 +1,6 @@
 package by.zapolski.english.lemma.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(exclude = {"id"})
 @NoArgsConstructor
+@AllArgsConstructor
 public class Lemma {
 
     @Id

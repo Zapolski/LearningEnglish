@@ -1,8 +1,10 @@
 package by.zapolski.english.learning.domain;
 
+import by.zapolski.english.learning.domain.enums.StorageType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,6 +17,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
+@BatchSize(size = 10)
 public class Resource implements Serializable {
 
     @Id

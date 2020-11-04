@@ -3,6 +3,9 @@ package by.zapolski.english.learning.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,7 +30,8 @@ public class Phrase implements Serializable {
      * Английское слово связанное с примером-фразой
      */
     @ManyToOne(
-            cascade = {CascadeType.PERSIST, CascadeType.REFRESH} // при создании фразы-примера с новым словом, слово должно попасть в БД
+            cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, // при создании фразы-примера с новым словом, слово должно попасть в БД
+            fetch = FetchType.LAZY
     )
     @JoinColumn(name = "word_id")
     private Word word;
@@ -36,16 +40,16 @@ public class Phrase implements Serializable {
      * Ресурс для файла-трэка с произношением английской фразы
      */
     @OneToOne(
-            cascade = CascadeType.ALL // ресурс полностью привязана к фразе-примеру
+            cascade = CascadeType.ALL, // ресурс полностью привязана к фразе-примеру
+            fetch = FetchType.LAZY
     )
-    @JoinColumn(name = "resource_id")
     private Resource resource;
 
     /**
      * Контекст-определение изучаемого слова в данной фразе-примере
      */
     @ManyToOne(
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH} // для нового контекста создается новая сущность
     )
     @JoinColumn(name = "context_id")
@@ -59,6 +63,7 @@ public class Phrase implements Serializable {
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL // переводы полностью привязаны к фразе-примеру
     )
+    @Fetch(FetchMode.SUBSELECT)
     private List<Translation> translations = new ArrayList<>();
 
     /**
@@ -66,12 +71,14 @@ public class Phrase implements Serializable {
      */
     @ManyToMany(
             cascade = CascadeType.PERSIST, // для нового правила создается новая сущность
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     @JoinTable(
             name = "phrase_rule",
             joinColumns = @JoinColumn(name = "phrase_id"),
-            inverseJoinColumns = @JoinColumn(name = "rule_id"))
+            inverseJoinColumns = @JoinColumn(name = "rule_id")
+    )
+    @Fetch(FetchMode.SUBSELECT)
     private List<Rule> rules = new ArrayList<>();
 
     /**
