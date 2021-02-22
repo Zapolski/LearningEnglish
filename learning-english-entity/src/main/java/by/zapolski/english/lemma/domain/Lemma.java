@@ -13,8 +13,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Data
 @EqualsAndHashCode(exclude = {"id"})
-@NoArgsConstructor
-@AllArgsConstructor
 public class Lemma {
 
     @Id
@@ -37,5 +35,8 @@ public class Lemma {
         this.value = value;
         this.rank = rank;
         this.partOfSpeech = partOfSpeech;
+    }
+
+    public Lemma() {
     }
 }

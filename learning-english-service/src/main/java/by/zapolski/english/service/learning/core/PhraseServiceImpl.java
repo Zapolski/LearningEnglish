@@ -36,7 +36,7 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
 
     @Override
     public List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language) {
-        List<Phrase> phrases = phraseRepository.getPhrasesByRanks(minRank, maxRank, Sort.by("id"));
+        List<Phrase> phrases = phraseRepository.getPhrasesByRanks(minRank, maxRank, Sort.by("rank"));
         phrases = filterByLanguage(phrases, language);
         return phrases;
     }

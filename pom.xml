@@ -18,7 +18,7 @@
         <org.hibernate.version>5.1.0.Final</org.hibernate.version>
         <spring.version>2.2.6.RELEASE</spring.version>
         <postgresql.version>42.2.12</postgresql.version>
-        <mapstruct.version>1.3.0.Final</mapstruct.version>
+        <mapstruct.version>1.3.1.Final</mapstruct.version>
         <apache.lang3.version>3.9</apache.lang3.version>
         <apache.text.version>1.8</apache.text.version>
         <apache.opennlp.version>1.8.4</apache.opennlp.version>
@@ -34,6 +34,7 @@
         <module>learning-english-entity</module>
         <module>learning-english-service</module>
         <module>learning-english-repository</module>
+        <module>learning-english-db</module>
     </modules>
 
     <dependencyManagement>
@@ -70,6 +71,12 @@
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
 

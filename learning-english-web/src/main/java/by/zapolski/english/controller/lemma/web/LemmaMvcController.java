@@ -6,7 +6,7 @@ import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
 import by.zapolski.english.lemma.dto.SearchLemmaRequest;
 import by.zapolski.english.lemma.dto.SearchLemmaRequestByRank;
 import by.zapolski.english.lemma.mapper.LemmaMapper;
-import by.zapolski.english.service.learning.core.loader.DbLoaderServiceImpl;
+import by.zapolski.english.service.learning.core.loader.DbServiceImpl;
 import by.zapolski.english.service.lemma.api.LemmaService;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Controller
 public class LemmaMvcController {
 
-    private static final Logger log = LoggerFactory.getLogger(DbLoaderServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DbServiceImpl.class);
     private final LemmaMapper lemmaMapper = Mappers.getMapper(LemmaMapper.class);
 
     final LemmaService lemmaService;

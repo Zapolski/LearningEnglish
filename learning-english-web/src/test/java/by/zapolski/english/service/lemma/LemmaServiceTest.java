@@ -30,8 +30,8 @@ public class LemmaServiceTest {
     public void getSimilarWordsWithAccuracyThreshold_test() {
         when(lemmaRepository.findAll()).thenReturn(
                 Arrays.asList(
-                        new Lemma(1L, "table", 1000, 'n'),
-                        new Lemma(2L, "chair", 1001, 'n')
+                        new Lemma("table", 1000, 'n'),
+                        new Lemma("chair", 1001, 'n')
                 )
         );
 

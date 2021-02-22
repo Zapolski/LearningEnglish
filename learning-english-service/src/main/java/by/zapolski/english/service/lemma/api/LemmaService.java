@@ -3,8 +3,9 @@ package by.zapolski.english.service.lemma.api;
 import by.zapolski.english.lemma.domain.Lemma;
 import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
 import by.zapolski.english.service.CrudBaseService;
-import java.util.List;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Сервис для работы со словарем

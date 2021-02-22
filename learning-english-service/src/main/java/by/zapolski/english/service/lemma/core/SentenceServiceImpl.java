@@ -10,7 +10,12 @@ import opennlp.tools.tokenize.TokenizerME;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+
+import static java.util.Arrays.asList;
 
 @Service
 public class SentenceServiceImpl implements SentenceService {
@@ -30,34 +35,48 @@ public class SentenceServiceImpl implements SentenceService {
     @Override
     public SentenceInfoDto getSentenceInfo(String sentence) {
         SentenceInfoDto sentenceInfo = new SentenceInfoDto();
-
-        sentenceInfo.setTokens(tokenizer.tokenize(sentence));
-        sentenceInfo.setTags(tagger.tag(sentenceInfo.getTokens()));
-        sentenceInfo.setLemmas(lemmatizer.lemmatize(sentenceInfo.getTokens(), sentenceInfo.getTags()));
         sentenceInfo.setSource(sentence);
 
-        Integer[] ranks = new Integer[sentenceInfo.getLemmas().length];
+        String[] tokens = tokenizer.tokenize(sentence);
+        sentenceInfo.setTokens(asList(tokens));
 
-        int rank;
-        int index = 0;
-        for (String lemma : sentenceInfo.getLemmas()) {
-            if (!"O".equals(lemma)) {
-                List<Lemma> wordList = lemmaRepository.findByValue(lemma);
-                Optional<Lemma> optional = wordList.stream().min(Comparator.comparingInt(Lemma::getRank));
-                int currentRank = optional.isPresent() ? optional.get().getRank() : 0;
-                ranks[index] = currentRank;
-            }
-            index++;
+        String[] tags = tagger.tag(tokens);
+        sentenceInfo.setTags(asList(tags));
+
+        String[] lemmas = lemmatizer.lemmatize(tokens, tags);
+        sentenceInfo.setLemmas(asList(lemmas));
+
+        // заменяем нераспознанные леммы на токены из исходного предложения
+        List<String> searchRequest = new ArrayList<>();
+        for (int i = 0; i < lemmas.length; i++) {
+            searchRequest.add("O".equals(lemmas[i]) ? tokens[i].toLowerCase() : lemmas[i]);
         }
 
-        if (Arrays.stream(ranks).filter(Objects::nonNull).anyMatch(value -> value == 0)) {
-            rank = 0;
-        } else {
-            rank = Arrays.stream(ranks).filter(Objects::nonNull).max(Integer::compareTo).orElse(0);
-        }
+        List<Lemma> searchResult = lemmaRepository.findByValueIn(searchRequest);
+        List<Integer> ranks = new ArrayList<>();
+        searchRequest.forEach(
+                lemma -> {
+                    Integer rank = searchResult.stream()
+                            .filter(search -> search.getValue().equals(lemma))
+                            .min(Comparator.comparingInt(Lemma::getRank))
+                            .map(Lemma::getRank).orElse(null);
+                    ranks.add(rank);
+                }
+        );
 
+//        Integer[] ranks = new Integer[sentenceInfo.getLemmas().length];
+//        int index = 0;
+//        for (String lemma : sentenceInfo.getLemmas()) {
+//            String search = "O".equals(lemma) ? tokens[index] : lemma;
+//            List<Lemma> wordList = lemmaRepository.findByValue(search.toLowerCase());
+//            Optional<Lemma> optional = wordList.stream().min(Comparator.comparingInt(Lemma::getRank));
+//            ranks[index++] = optional.map(Lemma::getRank).orElse(null);
+//        }
         sentenceInfo.setRanks(ranks);
+
+        int rank = ranks.stream().filter(Objects::nonNull).max(Integer::compareTo).orElse(0);
         sentenceInfo.setRank(rank);
+
         return sentenceInfo;
     }
 

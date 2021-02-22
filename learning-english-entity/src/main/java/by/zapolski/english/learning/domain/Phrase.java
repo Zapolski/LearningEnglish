@@ -20,6 +20,16 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(of = "value")
+@NamedEntityGraph(
+        name = "phrase-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("word"),
+                @NamedAttributeNode("resource"),
+                @NamedAttributeNode("context"),
+                //@NamedAttributeNode("translations"),
+                //@NamedAttributeNode("rules"),
+        }
+)
 public class Phrase implements Serializable {
 
     @Id

@@ -21,3 +21,7 @@ select setval('lemma_id_seq', 53166)
 Добавление ролей
 insert into authorities (value)
 values ('ROLE_ADMIN'),('ROLE_USER')
+
+postgres
+admin
+file:///D:/ideaProjects/learning-english/learning-english-web/audio/

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Serg (generated)" id="1613152549258-1">
+        <createSequence sequenceName="authorities_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-2">
+        <createSequence sequenceName="context_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-3">
+        <createSequence sequenceName="language_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-4">
+        <createSequence sequenceName="lemma_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-5">
+        <createSequence sequenceName="phrase_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-6">
+        <createSequence sequenceName="resource_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-7">
+        <createSequence sequenceName="rule_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-8">
+        <createSequence sequenceName="translation_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-9">
+        <createSequence sequenceName="users_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-10">
+        <createSequence sequenceName="vocabulary_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-11">
+        <createSequence sequenceName="word_id_seq"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-12">
+        <createTable tableName="authorities">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="authorities_pkey"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-13">
+        <createTable tableName="context">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="context_pkey"/>
+            </column>
+            <column name="value" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-14">
+        <createTable tableName="language">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="language_pkey"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-15">
+        <createTable tableName="lemma">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="lemma_pkey"/>
+            </column>
+            <column name="part_of_speech" type="BPCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rank" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-16">
+        <createTable tableName="phrase">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="phrase_pkey"/>
+            </column>
+            <column name="rank" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="context_id" type="BIGINT"/>
+            <column name="resource_id" type="BIGINT"/>
+            <column name="word_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-17">
+        <createTable tableName="phrase_rule">
+            <column name="phrase_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rule_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-18">
+        <createTable tableName="resource">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="resource_pkey"/>
+            </column>
+            <column name="checksum" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="size" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-19">
+        <createTable tableName="rule">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="rule_pkey"/>
+            </column>
+            <column name="value" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-20">
+        <createTable tableName="translation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="translation_pkey"/>
+            </column>
+            <column name="value" type="VARCHAR(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language_id" type="BIGINT"/>
+            <column name="phrase_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-21">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column name="active" type="BOOL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-22">
+        <createTable tableName="users_authorities">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="authorities_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-23">
+        <createTable tableName="vocabulary">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="vocabulary_pkey"/>
+            </column>
+            <column name="attempt" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="study_status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="word_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-24">
+        <createTable tableName="word">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="word_pkey"/>
+            </column>
+            <column name="rank" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-25">
+        <addPrimaryKey columnNames="user_id, authorities_id" constraintName="users_authorities_pkey"
+                       tableName="users_authorities"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-26">
+        <addUniqueConstraint columnNames="value" constraintName="uk_3uavcp6we4sjsoqpgdk6o5k04" tableName="context"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-27">
+        <addUniqueConstraint columnNames="value" constraintName="uk_4hbwgwervfaq39yngh01l2owq" tableName="word"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-28">
+        <addUniqueConstraint columnNames="value" constraintName="uk_cykiqooxa29ed0nrins74agsk" tableName="rule"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-29">
+        <addUniqueConstraint columnNames="value" constraintName="uk_fpdnr65cwm61mhd399byen9fp" tableName="language"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-30">
+        <addUniqueConstraint columnNames="user_name" constraintName="uk_k8d0f2n7n88w1a16yhua64onx" tableName="users"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-31">
+        <addUniqueConstraint columnNames="value" constraintName="uk_o9kvokxq5hl65g46j8p7xwms5" tableName="authorities"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-32">
+        <addForeignKeyConstraint baseColumnNames="word_id" baseTableName="vocabulary"
+                                 constraintName="fk4l2iq808jka7uecdaq5rr6kpd" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="word"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-33">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="vocabulary"
+                                 constraintName="fk50fel7tsib4tpnuqa7irn7f5c" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-34">
+        <addForeignKeyConstraint baseColumnNames="resource_id" baseTableName="phrase"
+                                 constraintName="fk6xq1t33pnqfdt519srga7sfed" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="resource"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-35">
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="translation"
+                                 constraintName="fkc2d46w0v0yhqdf6nyel7g0b3u" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="language"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-36">
+        <addForeignKeyConstraint baseColumnNames="word_id" baseTableName="phrase"
+                                 constraintName="fkgu0jcw4jes8m4qo0q945u626i" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="word"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-37">
+        <addForeignKeyConstraint baseColumnNames="phrase_id" baseTableName="translation"
+                                 constraintName="fkhguvqpy9ddnf8n4sf4o2627k7" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="phrase"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-38">
+        <addForeignKeyConstraint baseColumnNames="rule_id" baseTableName="phrase_rule"
+                                 constraintName="fkll8o9amijpkqyn42cto4fs1pi" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="rule"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-39">
+        <addForeignKeyConstraint baseColumnNames="authorities_id" baseTableName="users_authorities"
+                                 constraintName="fkmfxncv8ke1jjgna64c8kclry5" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="authorities"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-40">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_authorities"
+                                 constraintName="fkq3lq694rr66e6kpo2h84ad92q" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-41">
+        <addForeignKeyConstraint baseColumnNames="context_id" baseTableName="phrase"
+                                 constraintName="fks70eq2bfb9746kor988b6x6q" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="context"/>
+    </changeSet>
+    <changeSet author="Serg (generated)" id="1613152549258-42">
+        <addForeignKeyConstraint baseColumnNames="phrase_id" baseTableName="phrase_rule"
+                                 constraintName="fkt5w7af9ub8xdjpmu865dbntb3" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="phrase"/>
+    </changeSet>
+</databaseChangeLog>

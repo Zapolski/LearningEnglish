@@ -41,6 +41,16 @@ public class User implements UserDetails {
     private Set<Authority> authorities = new HashSet<>();
 
     @Override
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
     public String getUsername() {
         return userName;
     }
