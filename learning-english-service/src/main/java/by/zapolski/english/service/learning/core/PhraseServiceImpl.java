@@ -8,24 +8,25 @@ import by.zapolski.english.repository.learning.ContextRepository;
 import by.zapolski.english.repository.learning.PhraseRepository;
 import by.zapolski.english.service.CrudBaseServiceImpl;
 import by.zapolski.english.service.learning.api.PhraseService;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 @Service
+@RequiredArgsConstructor
 public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> implements PhraseService {
 
     private final PhraseRepository phraseRepository;
-
     private final ContextRepository contextRepository;
 
-    public PhraseServiceImpl(PhraseRepository phraseRepository, ContextRepository contextRepository) {
-        this.phraseRepository = phraseRepository;
-        this.contextRepository = contextRepository;
-    }
 
     @Override
     public List<Phrase> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language) {
@@ -38,6 +39,22 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
     public List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language) {
         List<Phrase> phrases = phraseRepository.getPhrasesByRanks(minRank, maxRank, Sort.by("rank"));
         phrases = filterByLanguage(phrases, language);
+
+//        Map<Integer, List<Phrase>> map = new HashMap<>();
+//        phrases.forEach(phrase -> {
+//            if (!map.containsKey(phrase.getRank())) {
+//                map.put(phrase.getRank(), new ArrayList<>());
+//            }
+//            if (map.get(phrase.getRank()).size() < 3){
+//                map.get(phrase.getRank()).add(phrase);
+//            }
+//        });
+//
+//        List<Phrase> result = new ArrayList<>();
+//        map.forEach((k,v) -> {
+//            result.addAll(v);
+//        });
+
         return phrases;
     }
 

@@ -234,9 +234,9 @@ public class DbServiceImpl implements DbService {
 
     @Override
     @Transactional
-    public void correctPhrasesRanks() {
-        Integer minRank = 180;
-        Integer maxRank = 200;
+    public void correctPhrasesRanks() { //фигня не надо больше делать
+        Integer minRank = 301;
+        Integer maxRank = 400;
         List<Phrase> phrases = phraseService.getAllPhrasesWithRank(minRank, maxRank, "Russian");
 
         phrases.forEach(phrase -> {
