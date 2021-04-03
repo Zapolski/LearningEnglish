@@ -2,12 +2,14 @@ package by.zapolski.english.controller.learning;
 
 import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.learning.dto.PhraseDto;
+import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.learning.mapper.PhraseMapper;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.service.learning.api.PhraseService;
 import org.mapstruct.factory.Mappers;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,11 @@ public class PhraseController {
 
     public PhraseController(PhraseService phraseService) {
         this.phraseService = phraseService;
+    }
+
+    @GetMapping("/phrases/find")
+    public List<PhraseDto> findAll(@RequestParam PhraseSearchDto search){
+        return Collections.EMPTY_LIST;
     }
 
     @GetMapping("/phrases/by/word/{word}")
