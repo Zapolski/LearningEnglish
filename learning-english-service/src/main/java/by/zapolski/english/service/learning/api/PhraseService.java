@@ -1,6 +1,7 @@
 package by.zapolski.english.service.learning.api;
 
 import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.service.CrudBaseService;
@@ -37,6 +38,8 @@ public interface PhraseService extends CrudBaseService<Phrase, Long> {
      */
     List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language);
 
+
+
     /**
      * Обновляет фразу по данным, пришедшим с UI
      *
@@ -44,4 +47,12 @@ public interface PhraseService extends CrudBaseService<Phrase, Long> {
      * @return DTO для обновленной фразы
      */
     Phrase updatePhrase(PhraseUpdateDto phraseUpdateDto);
+
+    /**
+     * Поиск фраз по критериям.
+     *
+     * @param searchDto критерии поиска
+     * @return список фраз
+     */
+    List<PhraseDto> search(PhraseSearchDto searchDto);
 }

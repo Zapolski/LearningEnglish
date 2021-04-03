@@ -24,9 +24,9 @@ public class PhraseController {
         this.phraseService = phraseService;
     }
 
-    @GetMapping("/phrases/find")
-    public List<PhraseDto> findAll(@RequestParam PhraseSearchDto search){
-        return Collections.EMPTY_LIST;
+    @GetMapping("/phrases/search")
+    public List<PhraseDto> findAll(PhraseSearchDto searchDto){
+        return phraseService.search(searchDto);
     }
 
     @GetMapping("/phrases/by/word/{word}")

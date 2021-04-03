@@ -2,17 +2,14 @@ package by.zapolski.english.repository.learning;
 
 import by.zapolski.english.learning.domain.Phrase;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface PhraseRepository extends JpaRepository<Phrase, Long> {
+public interface PhraseRepository extends JpaRepository<Phrase, Long>, JpaSpecificationExecutor<Phrase> {
     long count();
 
     @Query("select p from Phrase p where p.rank >= :minRank and p.rank <= :maxRank and p.word.value = :wordValue")
