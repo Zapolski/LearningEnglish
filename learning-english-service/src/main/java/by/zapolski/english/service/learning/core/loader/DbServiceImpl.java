@@ -2,18 +2,14 @@ package by.zapolski.english.service.learning.core.loader;
 
 import by.zapolski.english.learning.domain.*;
 import by.zapolski.english.learning.domain.enums.StorageType;
-import by.zapolski.english.lemma.domain.Lemma;
-import by.zapolski.english.repository.dictionary.LemmaRepository;
 import by.zapolski.english.repository.learning.*;
 import by.zapolski.english.service.learning.api.DbService;
-import by.zapolski.english.service.learning.api.PhraseService;
-import by.zapolski.english.service.lemma.api.SentenceService;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DbServiceImpl implements DbService {
 
     private static final Logger log = LoggerFactory.getLogger(DbServiceImpl.class);
@@ -36,35 +33,13 @@ public class DbServiceImpl implements DbService {
     private static final String EXCEL_FILE = "phrases.xls";
     private static final String BACKUP_FILE = "backup.xls";
 
-    @Autowired
-    private PhraseRepository phraseRepository;
-
-    @Autowired
-    private LemmaRepository lemmaRepository;
-
-    @Autowired
-    private LanguageRepository languageRepository;
-
-    @Autowired
-    private WordRepository wordRepository;
-
-    @Autowired
-    private TranslationRepository translationRepository;
-
-    @Autowired
-    private ContextRepository contextRepository;
-
-    @Autowired
-    private ResourceRepository resourceRepository;
-
-    @Autowired
-    private RuleRepository ruleRepository;
-
-    @Autowired
-    private PhraseService phraseService;
-
-    @Autowired
-    private SentenceService sentenceService;
+    private final PhraseRepository phraseRepository;
+    private final LanguageRepository languageRepository;
+    private final WordRepository wordRepository;
+    private final TranslationRepository translationRepository;
+    private final ContextRepository contextRepository;
+    private final ResourceRepository resourceRepository;
+    private final RuleRepository ruleRepository;
 
     @Override
     @Transactional
@@ -205,49 +180,6 @@ public class DbServiceImpl implements DbService {
             log.error("Error during open XLS file with data.", e);
         }
         logCounts("---> Counts after adding:");
-    }
-
-    @Override
-    @Transactional
-    public void correctRanks() {
-
-        List<Lemma> lemmas = lemmaRepository.findAll();
-        log.info("Корректирую ранги.");
-        List<Integer> ranks = lemmas.stream().map(Lemma::getRank).distinct().sorted().collect(Collectors.toList());
-        System.out.println(ranks);
-        System.out.println("Уникальныйх рангов: " + ranks.size());
-
-        for (int index = 0; index < ranks.size() - 1; index++) {
-            Integer newRank = index + 1;
-            Integer currentRank = ranks.get(index);
-            if (!newRank.equals(currentRank)) {
-                int count = 0;
-                count = count + lemmaRepository.updateRank(newRank, currentRank);
-                count = count + wordRepository.updateRank(newRank, currentRank);
-                count = count + phraseRepository.updateRank(newRank, currentRank);
-                log.info("Новый ранг: {}. Обновил {} записей", newRank, count);
-            }
-        }
-        log.info("Завершил корректировку рангов.");
-
-    }
-
-    @Override
-    @Transactional
-    public void correctPhrasesRanks() { //фигня не надо больше делать
-        Integer minRank = 301;
-        Integer maxRank = 400;
-        List<Phrase> phrases = phraseService.getAllPhrasesWithRank(minRank, maxRank, "Russian");
-
-        phrases.forEach(phrase -> {
-            Integer oldRank = phrase.getRank();
-            Integer newRank = sentenceService.getSentenceInfo(phrase.getValue()).getRank();
-            if (newRank != null && newRank > oldRank) {
-                log.info("Меняю {} на {}", oldRank, newRank);
-                phrase.setRank(newRank);
-                phraseRepository.save(phrase);
-            }
-        });
     }
 
     @Transactional

@@ -33,7 +33,6 @@
                 <input name="starter" type="button" value="Play/Pause" onclick="startstop()">
             </form>
 
-
             <br><br>
             <h2 class="center">Training English phrases with native speakers</h2>
 
@@ -47,14 +46,18 @@
             <br>
 
             <form class="center" data-bind="submit: loadRecordByWord">
-                <label>Request string: </label>
-                <input id="wordInput" data-bind="value: searchString" type="text" list="wordList">
+                <label>Word from DB: </label>
+                <input id="wordInput" data-bind="value: searchWord" type="text" list="wordList">
                 <datalist id="wordList" data-bind="foreach: availableWords">
                     <option data-bind="value: $data"></option>
                 </datalist>
                 <input data-bind="click: clearButtonClick" type="button" value="Clear">
                 <input type="submit" value="Load word">
                 <input data-bind="click: addWordToSet" type="button" value="Add to set">
+
+                <br>
+                <label>Text query: </label>                
+                <input id="textQuery" data-bind="value: textQuery" type="text">                
 
                 <br>
                 <label><input name="searchType" type="radio" value="0"
@@ -118,8 +121,9 @@
                                 <label>Translation</label>
                                 <input data-bind="value: $parent.newTranslation" type="text" class='input-field'><br>
                                 <label>English</label>
-                                <a target="_blank" data-bind="attr: {href: 'https://translate.google.com/?hl=ru#view=home&op=translate&sl=en&tl=ru&text=' + encodeURI($parent.newEnglish())}" >(translate.google.com)</a>
-                                <a target="_blank" data-bind="attr: {href: 'https://context.reverso.net/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/' + encodeURI($parent.newEnglish())}" >(context.reverso.net)</a>
+                                <a target="_blank" data-bind="attr: {href: 'https://wooordhunt.ru/word/' + $parent.wooordhuntRequest($parent.newEnglish())}" >(wooordhunt.ru)</a>
+                                <a target="_blank" data-bind="attr: {href: 'https://translate.google.com/?hl=ru#view=home&op=translate&sl=en&tl=ru&text=' + encodeURIComponent($parent.newEnglish())}" >(translate.google.com)</a>
+                                <a target="_blank" data-bind="attr: {href: 'https://context.reverso.net/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/' + encodeURIComponent($parent.newEnglish())}" >(context.reverso.net)</a>
                                 <input data-bind="value: $parent.newEnglish" type="text" class='input-field'><br>
                                 <label>Context</label>
                                 <input data-bind="value: $parent.newContext" type="text" class='input-field'><br>
@@ -169,7 +173,6 @@
                             </div>
                         </td>
                         <td class="center">
-                            <div data-bind="if: $parent.isUrlExists('audio/'+ $data.word() + '/' + $data.soundPath())">
                                 <a data-bind="event: {click: $parent.musicButtonClick}" class="music-button"><img
                                         src="img/player_play.png"></a>
                                 <audio data-bind="attr: {src: 'audio/'+ $data.word() + '/' + $data.soundPath()}"
@@ -178,10 +181,6 @@
                                     data-bind="event: {change: $parent.inputRangeInputAndChange, input: $parent.inputRangeInputAndChange}"
                                     type="range" step="0.1" min="0.2" max="2" value="1" class="speed" />
                                 <br><span class="speed-text">1.0</span>
-                            </div>
-                            <div data-bind="if: !$parent.isUrlExists('audio/'+ $data.word() + '/' + $data.soundPath())">
-                                <span>No audio</span>
-                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -205,7 +204,8 @@
             self.languageString = ko.observable("loading...");
 
             self.setWords = ko.observable("");
-            self.searchString = ko.observable("loading words from DB...");
+            self.textQuery = ko.observable("");
+            self.searchWord = ko.observable("loading words from DB...");
 
             self.minRank = ko.observable("0");
             self.maxRank = ko.observable("7000");
@@ -294,21 +294,21 @@
                 });
             }
 
-            // добавляет выбранносе слово из "Request string" в список на левой панели
+            // добавляет выбранносе слово из "Word from DB" в список на левой панели
             self.addWordToSet = function () {
                 var currentSet = self.setWords();
-                if (self.searchString() != "") {
+                if (self.searchWord() != "") {
                     if (currentSet != "") {
                         currentSet = currentSet + '\n';
                     }
-                    currentSet = currentSet + self.searchString();
+                    currentSet = currentSet + self.searchWord();
                     self.setWords(currentSet);
                 }
             }
 
-            // очищает слово в "Request string"
+            // очищает слово в "Word from DB"
             self.clearButtonClick = function () {
-                self.searchString("");
+                self.searchWord("");
             }
 
             // очищает набор слов в "Set words"
@@ -328,7 +328,7 @@
                             array.push(element.value);
                         });
                         self.availableWords(array);
-                        self.searchString("");
+                        self.searchWord("");
                     }
                 });
             }
@@ -352,16 +352,12 @@
 
             // загружает фразы-примеры по клику на кнопку "Load word" в зависимости от настроенного фильтра
             self.loadRecordByWord = function () {
-                let url = "";
-                // если не указано слово для поиска, то поиск идет по фразам входящим в диапазон minRank..maxRank
-                if (self.searchString() === "") {
-                    url = "http://localhost:8070/phrases/by/rank"
-                }
-                // если слово указано, то поиска идет по фразам отосящимся к данному слову в диапазоне фраз minRank..maxRank
-                else {
-                    url = "http://localhost:8070/phrases/by/word/" + self.searchString().toLowerCase();
-                }
-                url = url + "?minRank=" + self.minRank() + "&maxRank=" + self.maxRank() + "&language=" + self.languageString();
+                let url = "http://localhost:8070/phrases/search?";
+                url = url + (self.minRank() != "" ? "minRank=" + self.minRank() : "") + 
+                            (self.maxRank() != "" ? "&maxRank=" + self.maxRank() : "") + 
+                            (self.languageString() !="" ? "&language=" + self.languageString() : "") +
+                            (self.searchWord() != "" ? "&word=" + self.searchWord().toLowerCase() : "") +
+                            (self.textQuery() != "" ? "&textQuery=" + self.textQuery() : "");
 
                 $.ajax(url, {
                     type: "GET",
@@ -428,10 +424,12 @@
                 });
             }
 
+            // скрывает панель с информацией о предложении
             self.hideInfo = function (record) {
                 record.mode("");
             }
 
+            // открывает панель для редактирования фразы
             self.showEditor = function (record) {
                 self.records().forEach(element => {
                     element.mode("");
@@ -447,15 +445,17 @@
                 self.newSoundPath(record.soundPath());
             }
 
+            // скрывает панель редактирования фразы
             self.hideEditor = function (record) {
                 record.mode("");
             }
 
+            // обновляет запись
             self.updateRecord = function (record) {
                 var dataJson = 
                     '{"id":"' + self.newId() + '",' + 
-                    '"translation":"' + self.newTranslation() +
-                    '","english":"' + self.newEnglish() +
+                    '"translation":"' + self.newTranslation().replaceAll("\"", "\\\"") + //экранируем кавычки
+                    '","english":"' + self.newEnglish().replaceAll("\"", "\\\"") + //экранируем кавычки
                     '","context":"' + self.newContext() +
                     '","rank":"' + self.newRank() +
                     '","language":"' + self.languageString() +                    
@@ -476,6 +476,7 @@
                 });
             }
 
+            // обработчик нажатия клавиш
             self.inputFiledKeyUp = function (record, event) {
                 var $this = $(event.target);
 
@@ -524,6 +525,7 @@
                 }
             };
 
+            // клик по проигрыванию
             self.musicButtonClick = function (record, event) {
                 var $this = $(event.target);
                 audioEl = $this.closest('td')[0].getElementsByTagName('audio')[0];
@@ -531,11 +533,13 @@
                 audioEl.play();
             }
 
+            // управление ползунком скорости
             self.inputRangeInputAndChange = function (record, event) {
                 var $this = $(event.target);
                 $this.nextAll('.speed-text')[0].innerHTML = parseFloat($this.val()).toFixed(1);
             }
 
+            // клик по чек-боксу с переводом
             self.showQuestionCheckboxChange = function (record, event) {
                 var $this = $(event.target);
                 if ($this.is(":checked")) {
@@ -551,6 +555,7 @@
                 }
             }
 
+            // клик для отобржаения контекста фразы
             self.getEnglishWihtNamesHintsAndFirstUpper = function (english) {
                 var result = getWithFirstUpperCase(english);
                 return "<span class='tip hide'>" + result.replace(/(\[.*?\])/g, "</span><span class='tip show'>$1</span><span class='tip hide'>") + "</span>";
@@ -560,12 +565,22 @@
                 return getWithFirstUpperCase(translation)
             };
 
-            self.isUrlExists = function (url)
-            {
+            // проверка существования URL
+            self.isUrlExists = function (url) {
                 var http = new XMLHttpRequest();
                 http.open('HEAD', url, false);
                 http.send();
                 return http.status == 200;
+            }
+
+            self.wooordhuntRequest = function (english) {
+                list = english.replace(/[,:;?.!]/g, "").split(" ");
+                if (list.length <= 4) {
+                    return encodeURIComponent(english);
+                } else {
+                    list = list.slice(0, 4);
+                    return encodeURIComponent(list.join(' '));
+                }
             }
 
             // init events

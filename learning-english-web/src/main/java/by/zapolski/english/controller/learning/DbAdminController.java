@@ -17,18 +17,6 @@ public class DbAdminController {
         return "OK";
     }
 
-    @GetMapping("/database/rank/correct")
-    public String correctRanks() {
-        dbService.correctRanks();
-        return "OK";
-    }
-
-    @GetMapping("/database/phrase/rank/correct")
-    public String correctPhrasesRanks(){
-        dbService.correctPhrasesRanks();
-        return "OK";
-    }
-
     @GetMapping("/database/backup")
     public String backup(){
         dbService.backup();

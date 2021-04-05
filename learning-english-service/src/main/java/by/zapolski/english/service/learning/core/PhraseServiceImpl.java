@@ -2,6 +2,7 @@ package by.zapolski.english.service.learning.core;
 
 import by.zapolski.english.learning.domain.Context;
 import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.learning.domain.Phrase_;
 import by.zapolski.english.learning.domain.Translation;
 import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.learning.dto.PhraseSearchDto;
@@ -35,36 +36,6 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
 
 
     @Override
-    public List<Phrase> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language) {
-        List<Phrase> phrases = phraseRepository.getPhrasesForWord(word, minRank, maxRank, Sort.by("id"));
-        phrases = filterByLanguage(phrases, language);
-        return phrases;
-    }
-
-    @Override
-    public List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language) {
-        List<Phrase> phrases = phraseRepository.getPhrasesByRanks(minRank, maxRank, Sort.by("rank"));
-        phrases = filterByLanguage(phrases, language);
-
-//        Map<Integer, List<Phrase>> map = new HashMap<>();
-//        phrases.forEach(phrase -> {
-//            if (!map.containsKey(phrase.getRank())) {
-//                map.put(phrase.getRank(), new ArrayList<>());
-//            }
-//            if (map.get(phrase.getRank()).size() < 3){
-//                map.get(phrase.getRank()).add(phrase);
-//            }
-//        });
-//
-//        List<Phrase> result = new ArrayList<>();
-//        map.forEach((k,v) -> {
-//            result.addAll(v);
-//        });
-
-        return phrases;
-    }
-
-    @Override
     @Transactional
     public Phrase updatePhrase(PhraseUpdateDto phraseUpdateDto) {
 
@@ -93,20 +64,10 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
     @Override
     public List<PhraseDto> search(PhraseSearchDto searchDto) {
         Specification<Phrase> specification = phraseSpecifications.getSpecification(searchDto);
-        List<Phrase> result = phraseRepository.findAll(specification);
+        List<Phrase> result = phraseRepository.findAll(specification, Sort.by(Sort.Direction.ASC, Phrase_.RANK, Phrase_.ID));
         return result.stream()
                 .map(phraseMapper::phraseToDto)
                 .collect(Collectors.toList());
-    }
-
-    private List<Phrase> filterByLanguage(List<Phrase> list, String language) {
-        return list.stream().peek(
-                ph -> ph.setTranslations(
-                        ph.getTranslations().stream()
-                                .filter(t -> t.getLanguage().getValue().equals(language))
-                                .collect(Collectors.toList())
-                )
-        ).collect(Collectors.toList());
     }
 
 }

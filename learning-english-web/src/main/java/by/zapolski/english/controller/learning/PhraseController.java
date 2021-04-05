@@ -29,45 +29,12 @@ public class PhraseController {
         return phraseService.search(searchDto);
     }
 
-    @GetMapping("/phrases/by/word/{word}")
-    public List<PhraseDto> getPhrasesForWord(
-            @PathVariable String word,
-            @RequestParam(
-                    defaultValue = "0",
-                    required = false) Integer minRank,
-            @RequestParam(
-                    defaultValue = "2147483647",
-                    required = false) Integer maxRank,
-            @RequestParam String language
-    ) {
-        List<Phrase> phrases = phraseService.getPhrasesByWord(word, minRank, maxRank, language);
-        return phrases.stream()
-                .map(phraseMapper::phraseToDto)
-                .collect(Collectors.toList());
-    }
-
     @PutMapping("/phrases/update/{id}")
     public PhraseDto updatePhrase(
             @PathVariable Long id,
             @RequestBody PhraseUpdateDto phraseUpdateDto
     ) {
         return phraseMapper.phraseToDto(phraseService.updatePhrase(phraseUpdateDto));
-    }
-
-    @GetMapping("phrases/by/rank")
-    public List<PhraseDto> getPhrasesWithRank(
-            @RequestParam(
-                    defaultValue = "0",
-                    required = false) Integer minRank,
-            @RequestParam(
-                    defaultValue = "2147483647",
-                    required = false) Integer maxRank,
-            @RequestParam String language
-    ) {
-        List<Phrase> phrases = phraseService.getAllPhrasesWithRank(minRank, maxRank, language);
-        return phrases.stream()
-                .map(phraseMapper::phraseToDto)
-                .collect(Collectors.toList());
     }
 
 }

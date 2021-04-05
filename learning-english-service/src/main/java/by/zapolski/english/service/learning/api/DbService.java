@@ -14,16 +14,6 @@ public interface DbService {
     void resetDatabase();
 
     /**
-     * Корректировка рангов в таблицах Phrase, Lemma, Word
-     */
-    void correctRanks();
-
-    /**
-     * Обновляет ранги предложений по Lemma словарю
-     */
-    void correctPhrasesRanks();
-
-    /**
      * Резервная копия текущего состояния базы в Excel файл
      */
     void backup();

@@ -16,31 +16,6 @@ import java.util.List;
 public interface PhraseService extends CrudBaseService<Phrase, Long> {
 
     /**
-     * Каждому слову сопоставлен набор фраз-примеров
-     * Метод возвращает список фраз для конкретного слова
-     *
-     * @param word английское слово
-     * @param minRank минимальный ранг для искомых фраз
-     * @param maxRank максимальный ранг для искомых фраз
-     * @param language язык перевода
-     * @return список фраз-примеров связанных с изучаемым словом
-     */
-    List<Phrase> getPhrasesByWord(String word, Integer minRank, Integer maxRank, String language);
-
-    /**
-     * Каждой фразе присвоен ранг, он соответствует рагу самоого редкоиспользуемого слова
-     * Метод возвращает фразы в дипазаон рангов
-     *
-     * @param minRank минимальный ранг для искомы фраз
-     * @param maxRank максимальный ранг для искомых фраз
-     * @param language язык перевода
-     * @return список фраз-примеров воходящик в диапозон рангов
-     */
-    List<Phrase> getAllPhrasesWithRank(Integer minRank, Integer maxRank, String language);
-
-
-
-    /**
      * Обновляет фразу по данным, пришедшим с UI
      *
      * @param phraseUpdateDto обновленные поля для фразы-примера
