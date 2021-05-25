@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TranslationRepository extends JpaRepository<Translation, Long> {
-    long count();
 }

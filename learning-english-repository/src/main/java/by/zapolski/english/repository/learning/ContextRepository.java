@@ -6,9 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ContextRepository extends JpaRepository<Context, Long> {
-
     Context getByValue(String value);
-
-    long count();
-
 }

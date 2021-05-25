@@ -1,18 +1,16 @@
 package by.zapolski.english.service.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    final UserService userService;
-
-    public UserDetailsServiceImpl(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {

@@ -1,6 +1,7 @@
 package by.zapolski.english.controller.learning;
 
 import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.learning.dto.PagePhraseDto;
 import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.learning.mapper.PhraseMapper;
@@ -25,7 +26,7 @@ public class PhraseController {
     }
 
     @GetMapping("/phrases/search")
-    public List<PhraseDto> findAll(PhraseSearchDto searchDto){
+    public PagePhraseDto findAll(PhraseSearchDto searchDto){
         return phraseService.search(searchDto);
     }
 
@@ -35,6 +36,20 @@ public class PhraseController {
             @RequestBody PhraseUpdateDto phraseUpdateDto
     ) {
         return phraseMapper.phraseToDto(phraseService.updatePhrase(phraseUpdateDto));
+    }
+
+    @GetMapping("/phrases/pattern/search")
+    public PagePhraseDto getByPattern(
+            @RequestParam String query,
+            @RequestParam(
+                    defaultValue = "0",
+                    required = false) Integer minRank,
+            @RequestParam(
+                    defaultValue = "2147483647",
+                    required = false) Integer maxRank,
+            @RequestParam String language
+    ) {
+        return phraseService.getByPattern(query, minRank, maxRank);
     }
 
 }

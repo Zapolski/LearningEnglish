@@ -1,6 +1,7 @@
 package by.zapolski.english.service.learning.api;
 
 import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.learning.dto.PagePhraseDto;
 import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.learning.dto.PhraseDto;
@@ -27,7 +28,17 @@ public interface PhraseService extends CrudBaseService<Phrase, Long> {
      * Поиск фраз по критериям.
      *
      * @param searchDto критерии поиска
-     * @return список фраз
+     * @return страница с фразами
      */
-    List<PhraseDto> search(PhraseSearchDto searchDto);
+    PagePhraseDto search(PhraseSearchDto searchDto);
+
+    /**
+     * Поиск фраз по регулярному выражению POSIX PostgreSQL
+     *
+     * @param query шаблон POSIX
+     * @param minRank минимальный ранг
+     * @param maxRank максимальный ранг
+     * @return страница с фразами
+     */
+    PagePhraseDto getByPattern(String query, Integer minRank, Integer maxRank);
 }

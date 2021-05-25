@@ -38,6 +38,19 @@ public class SentenceServiceImpl implements SentenceService {
         sentenceInfo.setSource(sentence);
 
         String[] tokens = tokenizer.tokenize(sentence);
+
+        // сложные слова (с дефисом) разбиваем на два слова
+        // и рассматриваем их как самостоятельные токены
+        List<String> tokensList = new ArrayList<>();
+        for (String token : tokens) {
+            if (token.contains("-")) {
+                tokensList.addAll(asList(token.split("-")));
+            } else {
+                tokensList.add(token);
+            }
+        }
+        tokens = tokensList.toArray(new String[0]);
+
         sentenceInfo.setTokens(asList(tokens));
 
         String[] tags = tagger.tag(tokens);
@@ -46,10 +59,11 @@ public class SentenceServiceImpl implements SentenceService {
         String[] lemmas = lemmatizer.lemmatize(tokens, tags);
         sentenceInfo.setLemmas(asList(lemmas));
 
-        // заменяем нераспознанные леммы на токены из исходного предложения
+        // для большей глубины ранжирования заменяем
+        // нераспознанные леммы на токены из исходного предложения
         List<String> searchRequest = new ArrayList<>();
         for (int i = 0; i < lemmas.length; i++) {
-            searchRequest.add("O".equals(lemmas[i]) ? tokens[i].toLowerCase() : lemmas[i]);
+            searchRequest.add("O".equals(lemmas[i]) ? normalize(tokens[i].toLowerCase()) : lemmas[i]);
         }
 
         List<Lemma> searchResult = lemmaRepository.findByValueIn(searchRequest);
@@ -78,6 +92,12 @@ public class SentenceServiceImpl implements SentenceService {
         sentenceInfo.setRank(rank);
 
         return sentenceInfo;
+    }
+
+    private String normalize(String token){
+        return token
+                .replaceAll("\\.", "")
+                .replaceAll("\"", "");
     }
 
 

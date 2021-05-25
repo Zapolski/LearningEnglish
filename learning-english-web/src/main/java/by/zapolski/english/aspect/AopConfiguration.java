@@ -16,9 +16,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 public class AopConfiguration {
 
     @Pointcut(
-            "execution(public * by.zapolski.english.service.learning.core.PhraseServiceImpl.getAllPhrasesWithRank(..))" +
-            " || execution(public * by.zapolski.english.repository.learning.PhraseRepository.getPhrasesByRanks(..))"
-            //"within(@org.springframework.stereotype.Repository *)"
+            "execution(public * by.zapolski.english.service.learning.core.PhraseServiceImpl.search(..))"
     )
     public void monitor() {
     }

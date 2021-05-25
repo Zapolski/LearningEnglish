@@ -81,6 +81,9 @@
                 <br><br>
                 <span>Available examples: </span>
                 <span data-bind="text: getCountVisiblePhrases()"></span>
+                <br>
+                <span>Total duration: </span>
+                <span data-bind="text: totalDuration()"></span>                
             </form><br><br>
 
 
@@ -111,29 +114,28 @@
                                 data-bind="click: $data.mode() === 'edit' ? $parent.hideEditor : $parent.showEditor">Show/Hide
                                 editor</button>
 
-                            <button
-                                data-bind="click: $data.mode() === 'info' ? $parent.hideInfo : $parent.showInfo">Show/Hide
-                                info</button>
-
                             <div data-bind="visible: ($data.mode() === 'edit')">
-                                <label>Word</label> <a target="_blank" data-bind="attr: {href: 'https://www.ldoceonline.com/dictionary/' + $parent.newWord()}" >(source page)</a>
-                                <input data-bind="value: $parent.newWord" type="text" class='input-field' readonly><br>
+                                <div style="display:flex;align-items: center;align-items: center;">
+                                    <label>Word </label>
+                                    <input data-bind="value: $parent.newWord" type="text" class='input-field' readonly>
+                                </div>
                                 <label>Translation</label>
                                 <input data-bind="value: $parent.newTranslation" type="text" class='input-field'><br>
                                 <label>English</label>
                                 <a target="_blank" data-bind="attr: {href: 'https://wooordhunt.ru/word/' + $parent.wooordhuntRequest($parent.newEnglish())}" >(wooordhunt.ru)</a>
                                 <a target="_blank" data-bind="attr: {href: 'https://translate.google.com/?hl=ru#view=home&op=translate&sl=en&tl=ru&text=' + encodeURIComponent($parent.newEnglish())}" >(translate.google.com)</a>
                                 <a target="_blank" data-bind="attr: {href: 'https://context.reverso.net/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/' + encodeURIComponent($parent.newEnglish())}" >(context.reverso.net)</a>
+                                <a target="_blank" data-bind="attr: {href: 'https://www.ldoceonline.com/dictionary/' + $parent.newWord()}" >(source page) </a>                                
                                 <input data-bind="value: $parent.newEnglish" type="text" class='input-field'><br>
                                 <label>Context</label>
                                 <input data-bind="value: $parent.newContext" type="text" class='input-field'><br>
-                                <label>Rank</label>
-                                <input data-bind="value: $parent.newRank" type="text" class='input-field'><br>
+                                <div style="display:flex;align-items: center;align-items: center;">
+                                    <label>Rank</label>
+                                    <input data-bind="value: $parent.newRank" type="text" class='input-field'><br>
+                                </div>                                
                                 <button data-bind="click: $parent.updateRecord">Update record</button>
-                            </div>
 
-                            <div data-bind="visible: ($data.mode() === 'info')">
-                                <br>
+                                <br><br>
                                 <table>
                                     <tbody>
                                         <tr data-bind="foreach: $parent.tokens">
@@ -169,7 +171,7 @@
                                             </td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table>                                
                             </div>
                         </td>
                         <td class="center">
@@ -207,6 +209,8 @@
             self.textQuery = ko.observable("");
             self.searchWord = ko.observable("loading words from DB...");
 
+            self.totalDuration = ko.observable("00:00:00.000");
+            
             self.minRank = ko.observable("0");
             self.maxRank = ko.observable("7000");
 
@@ -363,8 +367,12 @@
                     type: "GET",
                     success: function (allData) {
                         var json = ko.toJSON(allData);
-                        var recordsFromServer = JSON.parse(json);
+                        var page = JSON.parse(json);
+
                         var array = [];
+                        self.totalDuration(page.totalDuration);
+                        var recordsFromServer = page.content;
+
                         recordsFromServer.forEach(element => {
                             var rec = new Phrase({
                                 id: element.id,
@@ -401,11 +409,19 @@
                 return visibleCount;
             }
 
-            // делает запрос о подробной информации о предложении
-            self.showInfo = function (record) {
+            // открывает панель для редактирования фразы
+            self.showEditor = function (record) {
                 self.records().forEach(element => {
                     element.mode("");
                 });
+
+                self.newId(record.id());
+                self.newEnglish(record.english());
+                self.newTranslation(record.translation());
+                self.newWord(record.word());
+                self.newContext(record.context());
+                self.newRank(record.rank());
+                self.newSoundPath(record.soundPath());
 
                 $.ajax("http://localhost:8070/sentences/info", {
                     data: record.english().replace(/[\[\]]/g, ""),
@@ -419,30 +435,9 @@
                         self.tags(infoFromServer.tags);
                         self.lemmas(infoFromServer.lemmas);
                         self.ranks(infoFromServer.ranks);
-                        record.mode("info");
+                        record.mode("edit");
                     }
-                });
-            }
-
-            // скрывает панель с информацией о предложении
-            self.hideInfo = function (record) {
-                record.mode("");
-            }
-
-            // открывает панель для редактирования фразы
-            self.showEditor = function (record) {
-                self.records().forEach(element => {
-                    element.mode("");
-                });
-
-                record.mode("edit");
-                self.newId(record.id());
-                self.newEnglish(record.english());
-                self.newTranslation(record.translation());
-                self.newWord(record.word());
-                self.newContext(record.context());
-                self.newRank(record.rank());
-                self.newSoundPath(record.soundPath());
+                });                
             }
 
             // скрывает панель редактирования фразы
@@ -499,11 +494,12 @@
                     for (let i = 0; i < tipColl.length; i++) {
                         actualVal = actualVal + tipColl[i].innerHTML;
                     }
-                    actualVal = actualVal.replace(/[\[\]]/g, "");
                     var currentVal = $this.val();
                     var checkDiv = $this.closest('td')[0].getElementsByClassName('check')[0];
-                    currentVal = currentVal.replace(/[,:;?.!–]/g, "").replace(/[ ]{2,}/g, " ");
-                    actualVal = actualVal.replace(/[,:;?.!–]/g, "").replace(/[ ]{2,}/g, " ");
+
+                    currentVal = currentVal.replace(/[\[\]"£$,:;?.!–]/g, "").replace(/[ ]{2,}/g, " ");
+                    actualVal = actualVal.replace(/[\[\]"£$,:;?.!–]/g, "").replace(/[ ]{2,}/g, " ");
+
                     $this.closest('tr')[0].getElementsByClassName('music-button')[0].click();
                     if (currentVal !== actualVal) {
                         $this.addClass('invalid');

@@ -1,8 +1,6 @@
 package by.zapolski.english.config;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,8 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf()
-                .disable()
+                .csrf().disable()
                 .authorizeRequests()
                 //Доступ только для не зарегистрированных пользователей
                 .antMatchers("/registration").not().fullyAuthenticated()
@@ -42,17 +39,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //Все остальные страницы требуют аутентификации
                 .anyRequest().authenticated()
                 .and()
-                    //Настройка для входа в систему
-                    .formLogin()
-                    .loginPage("/login")
-                    //Перенарпавление на страницу ошибки после ошибки на входе
-                    .failureUrl("/login-error")
-                    //Перенарпавление на главную страницу после успешного входа
-                    .defaultSuccessUrl("/")
-                    .permitAll()
+                //Настройка для входа в систему
+                .formLogin()
+                .loginPage("/login")
+                //Перенарпавление на страницу ошибки после ошибки на входе
+                .failureUrl("/login-error")
+                //Перенарпавление на главную страницу после успешного входа
+                .defaultSuccessUrl("/")
+                .permitAll()
                 .and()
-                    .logout()
-                    .permitAll()
-                    .logoutSuccessUrl("/");
+                .logout()
+                .permitAll()
+                .logoutSuccessUrl("/");
     }
 }
