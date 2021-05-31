@@ -14,4 +14,5 @@ public class PhraseDto {
     private List<RuleDto> rules;
     private String value;
     private Integer rank;
+    private boolean isModified;
 }

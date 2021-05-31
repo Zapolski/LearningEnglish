@@ -98,6 +98,7 @@
                             <span data-bind="text: 'R:' + $data.rank()"></span>
                         </td>
                         <td>
+                            <span data-bind="visible: $data.modified()">!!!</span>
                             <span data-bind="attr: {tabindex: ($index() + 100001), data_title: '[' + $data.word() + ']' + ' - ' + $data.context()}"
                                 class='support question_hidden' data-title=''>
                                 <em>?</em>
@@ -113,6 +114,7 @@
                             <button
                                 data-bind="click: $data.mode() === 'edit' ? $parent.hideEditor : $parent.showEditor">Show/Hide
                                 editor</button>
+                            
 
                             <div data-bind="visible: ($data.mode() === 'edit')">
                                 <div style="display:flex;align-items: center;align-items: center;">
@@ -283,7 +285,8 @@
                                     soundPath: element.soundPath,
                                     mode: "",
                                     currentAnswer: "",
-                                    visible: true
+                                    visible: true,
+                                    modified: element.modified
                                 });
                                 array.push(rec);
                             });
@@ -384,7 +387,8 @@
                                 soundPath: element.resource.path,
                                 mode: "",
                                 currentAnswer: "",
-                                visible: true
+                                visible: true,
+                                modified: element.modified                                
                             });
                             array.push(rec);
                         });
@@ -462,11 +466,14 @@
                     contentType: "application/json",
                     success: function (allData) {
                         alert("Record was successful updated");
+                        var json = ko.toJSON(allData);
+                        var response = JSON.parse(json);                        
                         record.mode("");
-                        record.translation(self.newTranslation());
-                        record.english(self.newEnglish());
-                        record.context(self.newContext());
-                        record.rank(self.newRank());
+                        record.translation(response.translations[0].value);
+                        record.english(response.value);
+                        record.context(response.context.value);
+                        record.rank(response.rank);
+                        record.modified(response.modified);
                     }
                 });
             }
@@ -596,6 +603,7 @@
             self.mode = ko.observable(data.mode);
             self.currentAnswer = ko.observable(data.currentAnswer);
             self.visible = ko.observable(data.visible);
+            self.modified = ko.observable(data.modified);            
         };
         ko.options.useOnlyNativeEvents = true;
         ko.applyBindings(new PhrasesViewModel());

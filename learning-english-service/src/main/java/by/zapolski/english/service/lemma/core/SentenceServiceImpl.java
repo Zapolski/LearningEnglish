@@ -34,36 +34,16 @@ public class SentenceServiceImpl implements SentenceService {
 
     @Override
     public SentenceInfoDto getSentenceInfo(String sentence) {
-        SentenceInfoDto sentenceInfo = new SentenceInfoDto();
-        sentenceInfo.setSource(sentence);
 
-        String[] tokens = tokenizer.tokenize(sentence);
-
-        // сложные слова (с дефисом) разбиваем на два слова
-        // и рассматриваем их как самостоятельные токены
-        List<String> tokensList = new ArrayList<>();
-        for (String token : tokens) {
-            if (token.contains("-")) {
-                tokensList.addAll(asList(token.split("-")));
-            } else {
-                tokensList.add(token);
-            }
-        }
-        tokens = tokensList.toArray(new String[0]);
-
-        sentenceInfo.setTokens(asList(tokens));
-
-        String[] tags = tagger.tag(tokens);
-        sentenceInfo.setTags(asList(tags));
-
-        String[] lemmas = lemmatizer.lemmatize(tokens, tags);
-        sentenceInfo.setLemmas(asList(lemmas));
+        SentenceInfoDto sentenceInfo = getNlpSentenceInfo(sentence);
+        List<String> lemmas = sentenceInfo.getLemmas();
+        List<String> tokens = sentenceInfo.getTokens();
 
         // для большей глубины ранжирования заменяем
         // нераспознанные леммы на токены из исходного предложения
         List<String> searchRequest = new ArrayList<>();
-        for (int i = 0; i < lemmas.length; i++) {
-            searchRequest.add("O".equals(lemmas[i]) ? normalize(tokens[i].toLowerCase()) : lemmas[i]);
+        for (int i = 0; i < lemmas.size(); i++) {
+            searchRequest.add("O".equals(lemmas.get(i)) ? normalize(tokens.get(i).toLowerCase()) : lemmas.get(i));
         }
 
         List<Lemma> searchResult = lemmaRepository.findByValueIn(searchRequest);
@@ -94,7 +74,64 @@ public class SentenceServiceImpl implements SentenceService {
         return sentenceInfo;
     }
 
-    private String normalize(String token){
+    @Override
+    public String markProperNouns(String sentence) {
+
+        String normSentence = sentence.replace("[", "").replace("]", "");
+        SentenceInfoDto info = getNlpSentenceInfo(normSentence);
+        info.setSource(sentence);
+
+        for (int i = 0; i < info.getTags().size(); i++) {
+            String tag = info.getTags().get(i);
+            if ("NNP".equals(tag) || "NNPS".equals(tag)) {
+                String properNoun = info.getTokens().get(i);
+
+                // если имя собственное - притяжательное, то окончание тоже захватываем
+                if ((info.getTags().size() > i + 1) && ("POS".equals(info.getTags().get(i + 1)))) {
+                    properNoun = properNoun + info.getTokens().get(i + 1);
+                }
+
+                String newProperNoun = "[" + properNoun + "]";
+                if (!info.getSource().contains(newProperNoun)) {
+                    info.setSource(
+                            info.getSource().replace(properNoun, newProperNoun)
+                    );
+                }
+            }
+        }
+        return info.getSource();
+    }
+
+    private SentenceInfoDto getNlpSentenceInfo(String sentence) {
+        SentenceInfoDto sentenceInfo = new SentenceInfoDto();
+        sentenceInfo.setSource(sentence);
+
+        String[] tokens = tokenizer.tokenize(sentence);
+
+        // сложные слова (с дефисом) разбиваем на два слова
+        // и рассматриваем их как самостоятельные токены
+        List<String> tokensList = new ArrayList<>();
+        for (String token : tokens) {
+            if (token.contains("-")) {
+                tokensList.addAll(asList(token.split("-")));
+            } else {
+                tokensList.add(token);
+            }
+        }
+        tokens = tokensList.toArray(new String[0]);
+
+        sentenceInfo.setTokens(asList(tokens));
+
+        String[] tags = tagger.tag(tokens);
+        sentenceInfo.setTags(asList(tags));
+
+        String[] lemmas = lemmatizer.lemmatize(tokens, tags);
+        sentenceInfo.setLemmas(asList(lemmas));
+
+        return sentenceInfo;
+    }
+
+    private String normalize(String token) {
         return token
                 .replaceAll("\\.", "")
                 .replaceAll("\"", "");

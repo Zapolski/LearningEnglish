@@ -16,4 +16,10 @@ public interface SentenceService {
      */
     SentenceInfoDto getSentenceInfo(String sentence);
 
+    /**
+     * Оборачивает в квадратные скобки имена собственные
+     * @param sentence исходное предложение
+     * @return результат обработки
+     */
+    String markProperNouns(String sentence);
 }

@@ -7,7 +7,9 @@ import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.learning.mapper.PhraseMapper;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
 import by.zapolski.english.service.learning.api.PhraseService;
+import by.zapolski.english.service.lemma.api.SentenceService;
 import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -19,15 +21,24 @@ public class PhraseController {
 
     private final PhraseMapper phraseMapper = Mappers.getMapper(PhraseMapper.class);
 
-    private final PhraseService phraseService;
+    @Autowired
+    private PhraseService phraseService;
 
-    public PhraseController(PhraseService phraseService) {
-        this.phraseService = phraseService;
-    }
+    @Autowired
+    private SentenceService sentenceService;
 
     @GetMapping("/phrases/search")
     public PagePhraseDto findAll(PhraseSearchDto searchDto){
-        return phraseService.search(searchDto);
+        PagePhraseDto page = phraseService.search(searchDto);
+        page.getContent().forEach(phrase -> {
+            String source = phrase.getValue();
+            String newSource = sentenceService.markProperNouns(source);
+            if (!source.equals(newSource)){
+                phrase.setValue(newSource);
+                phrase.setModified(true);
+            }
+        });
+        return page;
     }
 
     @PutMapping("/phrases/update/{id}")
@@ -35,7 +46,14 @@ public class PhraseController {
             @PathVariable Long id,
             @RequestBody PhraseUpdateDto phraseUpdateDto
     ) {
-        return phraseMapper.phraseToDto(phraseService.updatePhrase(phraseUpdateDto));
+        PhraseDto phrase = phraseMapper.phraseToDto(phraseService.updatePhrase(phraseUpdateDto));
+        String source = phrase.getValue();
+        String newSource = sentenceService.markProperNouns(source);
+        if (!source.equals(newSource)){
+            phrase.setValue(newSource);
+            phrase.setModified(true);
+        }
+        return phrase;
     }
 
     @GetMapping("/phrases/pattern/search")
