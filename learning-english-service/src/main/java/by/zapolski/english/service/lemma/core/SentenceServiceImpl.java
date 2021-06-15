@@ -77,16 +77,20 @@ public class SentenceServiceImpl implements SentenceService {
     @Override
     public String markProperNouns(String sentence) {
 
+        // удаляем возможное маркирование
         String normSentence = sentence.replace("[", "").replace("]", "");
         SentenceInfoDto info = getNlpSentenceInfo(normSentence);
+        // в info-структуру сетаем исходное преложение
         info.setSource(sentence);
 
         for (int i = 0; i < info.getTags().size(); i++) {
             String tag = info.getTags().get(i);
+            // находим "Proper noun singular" или "Proper noun plural"
             if ("NNP".equals(tag) || "NNPS".equals(tag)) {
                 String properNoun = info.getTokens().get(i);
 
                 // если имя собственное - притяжательное, то окончание тоже захватываем
+                // для этого проверяем есть ли следующий токен и является ли он "Possessive ending"
                 if ((info.getTags().size() > i + 1) && ("POS".equals(info.getTags().get(i + 1)))) {
                     properNoun = properNoun + info.getTokens().get(i + 1);
                 }
@@ -94,8 +98,10 @@ public class SentenceServiceImpl implements SentenceService {
                 String newProperNoun = "[" + properNoun + "]";
                 if (!info.getSource().contains(newProperNoun)) {
                     info.setSource(
-                            info.getSource().replace(properNoun, newProperNoun)
-                    );
+                            // заменяем через регулярку, что не было случайных попаданий внутри длинных слов
+                            // например имя собсвтенное Dart может входить в другое имя сосбтвенное Dartmouth
+                            // Finally, we arrived at [Dartmouth], where the [River] [Dart] joins the sea.
+                            info.getSource().replaceAll("\\b" + properNoun + "\\b", newProperNoun));
                 }
             }
         }
