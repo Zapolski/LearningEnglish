@@ -125,7 +125,7 @@
                                 <input data-bind="value: $parent.newTranslation" type="text" class='input-field'><br>
                                 <label>English</label>
                                 <a target="_blank" data-bind="attr: {href: 'https://wooordhunt.ru/word/' + $parent.wooordhuntRequest($parent.newEnglish())}" >(wooordhunt.ru)</a>
-                                <a target="_blank" data-bind="attr: {href: 'https://translate.google.com/?hl=ru#view=home&op=translate&sl=en&tl=ru&text=' + encodeURIComponent($parent.newEnglish())}" >(translate.google.com)</a>
+                                <a target="_blank" data-bind="attr: {href: 'https://translate.google.com/?hl=ru#view=home&op=translate&sl=en&tl=ru&text=' + $parent.googleRequest($parent.newEnglish())}" >(translate.google.com)</a>
                                 <a target="_blank" data-bind="attr: {href: 'https://context.reverso.net/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/' + encodeURIComponent($parent.newEnglish())}" >(context.reverso.net)</a>
                                 <a target="_blank" data-bind="attr: {href: 'https://www.ldoceonline.com/dictionary/' + $parent.newWord()}" >(source page) </a>                                
                                 <input data-bind="value: $parent.newEnglish" type="text" class='input-field'><br>
@@ -533,6 +533,8 @@
                 var $this = $(event.target);
                 audioEl = $this.closest('td')[0].getElementsByTagName('audio')[0];
                 audioEl.playbackRate = $this.closest('td')[0].getElementsByClassName('speed')[0].value;
+                //audioEl.pause();
+                //audioEl.currentTime = 0;
                 audioEl.play();
             }
 
@@ -584,6 +586,11 @@
                     list = list.slice(0, 4);
                     return encodeURIComponent(list.join(' '));
                 }
+            }
+
+            self.googleRequest = function (english) {
+                str = english.replace(/[\[\]]/g, "");
+                return encodeURIComponent(str);
             }
 
             // init events
