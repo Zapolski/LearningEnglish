@@ -7,6 +7,8 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 /**
  * Критерии поиска фраз
  */
@@ -36,6 +38,16 @@ public class PhraseSearchDto {
      * Базовове слова для примеров.
      */
     String word;
+
+    /**
+     * Список слов
+     */
+    List<String> words;
+
+    /**
+     * Список рангов
+     */
+    List<Integer> ranks;
 
     /**
      * Текстовый запрос.

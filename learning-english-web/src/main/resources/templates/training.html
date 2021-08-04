@@ -57,8 +57,8 @@
 
                 <br>
                 <label>Text query: </label>                
-                <input id="textQuery" data-bind="value: textQuery" type="text">                
-
+                <input id="textQuery" data-bind="value: textQuery" type="text">
+                <input data-bind="click: clearTextQueryButtonClick" type="button" value="Clear">
                 <br>
                 <label><input name="searchType" type="radio" value="0"
                         data-bind="checked: radioSelectedOptionValue" />use
@@ -73,10 +73,10 @@
                 <label><input type="checkbox" data-bind="checked: isShuffle" />shuffle</label>
                 <br>
                 <label>Min rank: </label>
-                <input id="minRank" data-bind="value: minRank" type="number">
+                <input id="minRank" data-bind="value: minRank, event: {change: minRankInput}" type="number">
                 <label>Max rank: </label>
                 <input id="maxRank" data-bind="value: maxRank" type="number">
-
+                <input data-bind="click: defaultRanksButtonClick" type="button" value="Default ranks">
 
                 <br><br>
                 <span>Available examples: </span>
@@ -127,7 +127,7 @@
                                 <a target="_blank" data-bind="attr: {href: 'https://wooordhunt.ru/word/' + $parent.wooordhuntRequest($parent.newEnglish())}" >(wooordhunt.ru)</a>
                                 <a target="_blank" data-bind="attr: {href: 'https://translate.google.com/?hl=ru#view=home&op=translate&sl=en&tl=ru&text=' + $parent.googleRequest($parent.newEnglish())}" >(translate.google.com)</a>
                                 <a target="_blank" data-bind="attr: {href: 'https://context.reverso.net/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9/' + encodeURIComponent($parent.newEnglish())}" >(context.reverso.net)</a>
-                                <a target="_blank" data-bind="attr: {href: 'https://www.ldoceonline.com/dictionary/' + $parent.newWord()}" >(source page) </a>                                
+                                <a target="_blank" data-bind="attr: {href: 'https://www.ldoceonline.com/dictionary/' + $parent.sourceRequest($parent.newWord())}" >(source page) </a>
                                 <input data-bind="value: $parent.newEnglish" type="text" class='input-field'><br>
                                 <label>Context</label>
                                 <input data-bind="value: $parent.newContext" type="text" class='input-field'><br>
@@ -318,9 +318,25 @@
                 self.searchWord("");
             }
 
+            // очищает "Text query"
+            self.clearTextQueryButtonClick = function () {
+                self.textQuery("");
+            }
+
+            // сбрасывает минимальный и максимальный ранги
+            self.defaultRanksButtonClick = function () {
+                self.minRank("0");
+                self.maxRank("100000");
+            }
+
             // очищает набор слов в "Set words"
             self.clearSetClick = function () {
                 self.setWords("");
+            }
+
+            // дублирует набор из minRank в maxRank для удобства поиска по одному рангу
+            self.minRankInput = function () {
+                self.maxRank(self.minRank());
             }
 
             // загрузка всех доступных слов
@@ -591,6 +607,10 @@
             self.googleRequest = function (english) {
                 str = english.replace(/[\[\]]/g, "");
                 return encodeURIComponent(str);
+            }
+
+            self.sourceRequest = function (word) {
+                return word.replace(" ", "-");
             }
 
             // init events
