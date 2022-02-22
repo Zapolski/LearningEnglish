@@ -12,15 +12,17 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Component
 public class PhraseSpecificationsImpl implements PhraseSpecifications {
     @Override
     public Specification<Phrase> getSpecification(PhraseSearchDto search) {
-        return Specification.<Phrase>where(spec(search.getWord(), Phrase_.word, Word_.value))
+        return Objects.requireNonNull(Specification.<Phrase>where(spec(search.getWord(), Phrase_.word, Word_.value))
+                .and(spec(search.getRanks(), Phrase_.rank))
                 .and(greaterThanOrEqualToMinRank(search))
-                .and(lessThanOrEqualToMaxRank(search))
+                .and(lessThanOrEqualToMaxRank(search)))
                 .and(languageSpec(search))
                 .and(like(search));
     }

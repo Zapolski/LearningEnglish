@@ -15,12 +15,12 @@
 <body style="display: none;" data-bind="visible: true" onLoad="display()">
 
     <div class="sidenav">
-        <span>Set words:</span>
+        <span>Set ranks:</span>
         <textarea id="set-text-area" class="set-text-area" data-bind="textInput: setWords" rows="15"
             cols="25"></textarea>
         <div class="set-controls">
             <input data-bind="click: clearSetClick" type="button" value="Clear">
-            <input data-bind="click: loadSet" type="button" value="Load set"><br>
+            <input data-bind="click: loadSet" type="button" value="Load set" hidden><br>
         </div>
     </div>
 
@@ -375,12 +375,15 @@
 
             // загружает фразы-примеры по клику на кнопку "Load word" в зависимости от настроенного фильтра
             self.loadRecordByWord = function () {
+                self.setWords(self.setWords().replace(/ \[.*\]/g, ""));
+                let searchRanks = self.setWords().split('\n').join();
                 let url = "http://localhost:8070/phrases/search?";
                 url = url + (self.minRank() != "" ? "minRank=" + self.minRank() : "") + 
                             (self.maxRank() != "" ? "&maxRank=" + self.maxRank() : "") + 
                             (self.languageString() !="" ? "&language=" + self.languageString() : "") +
                             (self.searchWord() != "" ? "&word=" + self.searchWord().toLowerCase() : "") +
-                            (self.textQuery() != "" ? "&textQuery=" + self.textQuery() : "");
+                            (self.textQuery() != "" ? "&textQuery=" + self.textQuery() : "") +
+                            (searchRanks != "" ? "&ranks=" + searchRanks : "");
 
                 $.ajax(url, {
                     type: "GET",
