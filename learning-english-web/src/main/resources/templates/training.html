@@ -19,6 +19,9 @@
         <textarea id="set-text-area" class="set-text-area" data-bind="textInput: setWords" rows="15"
             cols="25"></textarea>
         <div class="set-controls">
+            <input id="file-input" type="file" data-bind="event: {change: fileInputChange}">
+            <input id="file-button" data-bind="click: fileButtonClick" type="button" value="Load file">
+            <input id="save-file-button" data-bind="click: saveFileButtonClick" type="button" value="Save file"><br><br>
             <input data-bind="click: clearSetClick" type="button" value="Clear">
             <input data-bind="click: loadSet" type="button" value="Load set" hidden><br>
         </div>
@@ -615,6 +618,60 @@
             self.sourceRequest = function (word) {
                 return word.replace(" ", "-");
             }
+
+
+            self.saveFileButtonClick = function () {
+                console.log("saveFileButtonClick");
+                var textToSave = self.setWords(),
+                    textToSaveAsBlob = new Blob([textToSave], { type: "text/plain" }),
+                    textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob),
+                    fileNameToSaveAs = "set",
+                    downloadLink = document.createElement("a");
+
+                downloadLink.download = fileNameToSaveAs + ".txt";
+                downloadLink.innerHTML = "Download File";
+                downloadLink.href = textToSaveAsURL;
+                downloadLink.onclick = function destroyClickedElement(event) {
+                    document.body.removeChild(event.target);
+                };
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            };
+
+            self.fileButtonClick = function () {
+                console.log("file-button click");
+                let fileInput = document.getElementById("file-input");
+                fileInput.click();
+            };
+            self.fileInputChange = function (vm, evt) {
+                console.log("file-input change");
+                ko.utils.arrayForEach(evt.target.files, function (file) {
+                    console.log(file.name);
+                    if (file.type == 'text/plain') {
+                        // Создаём новый FileReader, который и будет читать наш файл
+                        var reader = new FileReader();
+
+                        // Событие успешного чтения
+                        reader.onloadend = function (event) {
+                            let text = event.target.result;
+                            console.log(text);
+                            self.setWords(text);
+                            evt.target.value = "";
+                        };
+
+                        // Событие ошибки
+                        reader.onerror = function () {
+                            alert('Error during reading file!');
+                        };
+
+                        // Читаем наш файл как текст
+                        reader.readAsText(file);
+                    } else {
+                        alert('It is not a text file!');
+                    }
+                });
+            };            
 
             // init events
             self.loadAllAvailableWord();

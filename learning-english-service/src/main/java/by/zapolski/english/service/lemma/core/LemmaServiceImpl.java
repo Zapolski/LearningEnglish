@@ -5,17 +5,13 @@ import by.zapolski.english.lemma.dto.LemmaWithSimilarityDto;
 import by.zapolski.english.repository.dictionary.LemmaRepository;
 import by.zapolski.english.service.CrudBaseServiceImpl;
 import by.zapolski.english.service.lemma.api.LemmaService;
+import org.apache.commons.text.similarity.JaroWinklerSimilarity;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.apache.commons.text.similarity.JaroWinklerSimilarity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
 @Service
 public class LemmaServiceImpl extends CrudBaseServiceImpl<Lemma, Long> implements LemmaService {

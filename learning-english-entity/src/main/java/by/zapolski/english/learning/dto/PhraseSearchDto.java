@@ -50,7 +50,7 @@ public class PhraseSearchDto {
     List<Integer> ranks;
 
     /**
-     * Текстовый запрос.
+     * Список текстовых запросов.
      */
-    String textQuery;
+    List<String> textQuery;
 }

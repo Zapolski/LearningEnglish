@@ -12,8 +12,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 @Component
 public class PhraseSpecificationsImpl implements PhraseSpecifications {
@@ -21,21 +21,18 @@ public class PhraseSpecificationsImpl implements PhraseSpecifications {
     public Specification<Phrase> getSpecification(PhraseSearchDto search) {
         return Objects.requireNonNull(Specification.<Phrase>where(spec(search.getWord(), Phrase_.word, Word_.value))
                 .and(spec(search.getRanks(), Phrase_.rank))
-                .and(greaterThanOrEqualToMinRank(search))
-                .and(lessThanOrEqualToMaxRank(search)))
+                .and(greaterOrEqualSpec(search.getMinRank(), Phrase_.rank))
+                .and(lessOrEqualSpec(search.getMaxRank(), Phrase_.rank)))
                 .and(languageSpec(search))
-                .and(like(search));
+                .and(likeSpec(search.getTextQuery(), Phrase_.value));
     }
 
-    private static Specification<Phrase> like(PhraseSearchDto search) {
-        return (root, query, builder) -> {
-            if (empty(search.getTextQuery())) {
-                return null;
-            }
-            return builder.like(root.get(Phrase_.value), "%" + search.getTextQuery() + "%");
-        };
+    private static <T> Specification<T> likeSpec(List<String> value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        return Specification.where(spec(value, (root, query, cb) -> cb.or(value.stream()
+                .map(val ->
+                        cb.like(path(root, attribute, attributes), "%" + val + "%"))
+                .toArray(Predicate[]::new))));
     }
-
 
     private static Specification<Phrase> languageSpec(PhraseSearchDto search) {
         return (phraseRoot, query, builder) -> {
@@ -50,45 +47,45 @@ public class PhraseSpecificationsImpl implements PhraseSpecifications {
         };
     }
 
-    private static Specification<Phrase> lessThanOrEqualToMaxRank(PhraseSearchDto search) {
-        return (root, query, builder) -> {
-            if (empty(search.getMaxRank())) {
-                return null;
-            }
-            return builder.lessThanOrEqualTo(root.get(Phrase_.rank), search.getMaxRank());
-        };
+    private static <T, V extends Comparable<V>> Specification<T> greaterOrEqualSpec(
+            V value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        return spec(value, (root, query, cb) ->
+                cb.greaterThanOrEqualTo(path(root, attribute, attributes), value));
     }
 
-    private static Specification<Phrase> greaterThanOrEqualToMinRank(PhraseSearchDto search) {
-        return (root, query, builder) -> {
-            if (empty(search.getMinRank())) {
-                return null;
-            }
-            return builder.greaterThanOrEqualTo(root.get(Phrase_.rank), search.getMinRank());
-        };
-    }
-
-    private static <T> Specification<T> spec(Object value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
-        return (root, query, cb) -> {
-            if (empty(value)) {
-                return null;
-            }
-            Path<?> path = root.get(attribute.getName());
-            for (SingularAttribute<?, ?> k : attributes) {
-                path = path.get(k.getName());
-            }
-            return value instanceof Collection
-                    ? path.in((Collection) value)
-                    : cb.equal(path, value);
-        };
-    }
-
-    private static <T, V> Specification<T> spec(V value, Function<V, Predicate> function) {
-        return (root, query, cb) ->
-                empty(value) ? null : function.apply(value);
+    private static <T, V extends Comparable<V>> Specification<T> lessOrEqualSpec(
+            V value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        return spec(value, (root, query, cb) ->
+                cb.lessThanOrEqualTo(path(root, attribute, attributes), value));
     }
 
     private static boolean empty(Object value) {
         return value == null || value instanceof Collection && ((Collection) value).isEmpty();
+    }
+
+    private static <T, V> Specification<T> spec(V value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        return spec(value, (root, query, cb) -> {
+            Path<V> path = path(root, attribute, attributes);
+            return value instanceof Collection
+                    ? path.in((Collection<?>) value)
+                    : cb.equal(path, value);
+        });
+    }
+
+    private static <T, V> Specification<T> spec(V value, Specification<T> specification) {
+        if (empty(value)) {
+            return (root, query, cb) ->
+                    null;
+        }
+        return specification;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T, V> Path<V> path(Root<T> root, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        Path<?> path = root.get(attribute.getName());
+        for (SingularAttribute<?, ?> k : attributes) {
+            path = path.get(k.getName());
+        }
+        return (Path<V>) path;
     }
 }
