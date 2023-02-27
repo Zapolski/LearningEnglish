@@ -71,15 +71,9 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
         List<Phrase> result = phraseRepository.findAll(specification, Sort.by(Sort.Direction.ASC, Phrase_.RANK, Phrase_.ID));
 
         return new PagePhraseDto(
-                result.stream()
-                        .map(phraseMapper::phraseToDto)
-                        .collect(Collectors.toList()),
+                getPhraseDtos(result),
                 result.size(),
-                DurationFormatUtils.formatDurationHMS(
-                        result.stream()
-                                .mapToLong(phrase -> phrase.getResource().getDuration())
-                                .sum()
-                )
+                getTotalDuration(result)
         );
     }
 
@@ -87,15 +81,33 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
     public PagePhraseDto getByPattern(String query, Integer minRank, Integer maxRank){
         List<Phrase> result = phraseRepository.getByPattern(query, minRank, maxRank);
         return new PagePhraseDto(
-                result.stream()
-                        .map(phraseMapper::phraseToDto)
-                        .collect(Collectors.toList()),
+                getPhraseDtos(result),
                 result.size(),
-                DurationFormatUtils.formatDurationHMS(
-                        result.stream()
-                                .mapToLong(phrase -> phrase.getResource().getDuration())
-                                .sum()
-                )
+                getTotalDuration(result)
+        );
+    }
+
+    @Override
+    public PagePhraseDto getRandomCount(Long count){
+        List<Phrase> result = phraseRepository.getRandomCount(count);
+        return new PagePhraseDto(
+                getPhraseDtos(result),
+                result.size(),
+                getTotalDuration(result)
+        );
+    }
+
+    private List<PhraseDto> getPhraseDtos(List<Phrase> result) {
+        return result.stream()
+                .map(phraseMapper::phraseToDto)
+                .collect(Collectors.toList());
+    }
+
+    private String getTotalDuration(List<Phrase> result) {
+        return DurationFormatUtils.formatDurationHMS(
+                result.stream()
+                        .mapToLong(phrase -> phrase.getResource().getDuration())
+                        .sum()
         );
     }
 

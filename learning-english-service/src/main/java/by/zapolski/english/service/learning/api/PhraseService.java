@@ -41,4 +41,12 @@ public interface PhraseService extends CrudBaseService<Phrase, Long> {
      * @return страница с фразами
      */
     PagePhraseDto getByPattern(String query, Integer minRank, Integer maxRank);
+
+    /**
+     * Возвращает случайное количество фраз
+     *
+     * @param count необходимое количество фраз
+     * @return страница с фразами
+     */
+    PagePhraseDto getRandomCount(Long count);
 }

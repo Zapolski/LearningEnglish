@@ -81,6 +81,10 @@
                 <input id="maxRank" data-bind="value: maxRank" type="number">
                 <input data-bind="click: defaultRanksButtonClick" type="button" value="Default ranks">
 
+                <br>
+                <input id="randomCount" data-bind="value: randomCount" type="number">
+                <input data-bind="click: loadRandomSentences" type="button" value="Load random sentences">
+
                 <br><br>
                 <span>Available examples: </span>
                 <span data-bind="text: getCountVisiblePhrases()"></span>
@@ -219,6 +223,8 @@
             self.minRank = ko.observable("0");
             self.maxRank = ko.observable("7000");
 
+            self.randomCount = ko.observable("10");
+
             self.isShuffle = false;
             self.isUseCaseSensitiveSearch = false;
 
@@ -331,6 +337,47 @@
                 self.minRank("0");
                 self.maxRank("100000");
             }
+
+            // загружает случайное количество фраз
+            self.loadRandomSentences = function () {
+                let url = "http://localhost:8070/phrases/random?";
+                url = url + (self.randomCount() != "" ? "count=" + self.randomCount() : "");
+
+                $.ajax(url, {
+                    type: "GET",
+                    success: function (allData) {
+                        var json = ko.toJSON(allData);
+                        var page = JSON.parse(json);
+
+                        var array = [];
+                        self.totalDuration(page.totalDuration);
+                        var recordsFromServer = page.content;
+
+                        recordsFromServer.forEach(element => {
+                            var rec = new Phrase({
+                                id: element.id,
+                                word: element.word.value,
+                                translation: element.translations[0].value,
+                                english: element.value,
+                                context: element.context.value,
+                                rank: element.rank,
+                                soundPath: element.resource.path,
+                                mode: "",
+                                currentAnswer: "",
+                                visible: true,
+                                modified: element.modified
+                            });
+                            array.push(rec);
+                        });
+
+                        if (self.isShuffle) {
+                            array = shuffle(array);
+                        }
+                        console.log(array);
+                        self.records(array);
+                    }
+                });
+            };
 
             // очищает набор слов в "Set words"
             self.clearSetClick = function () {

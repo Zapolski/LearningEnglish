@@ -17,4 +17,10 @@ public interface PhraseRepository extends JpaRepository<Phrase, Long>, JpaSpecif
             nativeQuery = true)
     List<Phrase> getByPattern(String query, Integer minRank, Integer maxRank);
 
+    @Query(
+            value = "SELECT * from phrase p " +
+                    "order by random() limit ?1",
+            nativeQuery = true)
+    List<Phrase> getRandomCount(Long count);
+
 }
