@@ -52,5 +52,5 @@ public class PhraseSearchDto {
     /**
      * Список текстовых запросов.
      */
-    List<String> textQuery;
+    String textQuery;
 }

@@ -44,6 +44,11 @@ public class PhraseController {
         return phrase;
     }
 
+    @PutMapping("/phrases/update/view/{id}")
+    public PhraseDto updateSuccessView(@PathVariable Long id) {
+        return phraseMapper.phraseToDto(phraseService.updateSuccessView(id));
+    }
+
     @GetMapping("/phrases/pattern/search")
     public PagePhraseDto getByPattern(
             @RequestParam String query,

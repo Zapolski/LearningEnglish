@@ -19,8 +19,9 @@ public interface PhraseRepository extends JpaRepository<Phrase, Long>, JpaSpecif
 
     @Query(
             value = "SELECT * from phrase p " +
-                    "order by random() limit ?1",
+                    "WHERE learning_status = ?2 " +
+                    "order by last_success_view_date, random() limit ?1",
             nativeQuery = true)
-    List<Phrase> getRandomCount(Long count);
+    List<Phrase> getRandomCount(Integer count, String learningStatus);
 
 }

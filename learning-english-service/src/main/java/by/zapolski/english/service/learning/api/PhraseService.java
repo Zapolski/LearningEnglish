@@ -4,11 +4,8 @@ import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.learning.dto.PagePhraseDto;
 import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
-import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.service.CrudBaseService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Сервис для работы с фразами
@@ -35,7 +32,7 @@ public interface PhraseService extends CrudBaseService<Phrase, Long> {
     /**
      * Поиск фраз по регулярному выражению POSIX PostgreSQL
      *
-     * @param query шаблон POSIX
+     * @param query   шаблон POSIX
      * @param minRank минимальный ранг
      * @param maxRank максимальный ранг
      * @return страница с фразами
@@ -49,4 +46,12 @@ public interface PhraseService extends CrudBaseService<Phrase, Long> {
      * @return страница с фразами
      */
     PagePhraseDto getRandomCount(Long count);
+
+    /**
+     * Обновляет счетчик просмотров и дату последнего просмотра.
+     * Также при отсутствии даты верификации устанавливает её.
+     *
+     * @param id уникальный идентификатор фразы
+     */
+    Phrase updateSuccessView(Long id);
 }

@@ -1,8 +1,21 @@
 package by.zapolski.english.service.learning.core.loader;
 
-import by.zapolski.english.learning.domain.*;
+import by.zapolski.english.learning.domain.Context;
+import by.zapolski.english.learning.domain.Language;
+import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.learning.domain.Resource;
+import by.zapolski.english.learning.domain.Rule;
+import by.zapolski.english.learning.domain.Translation;
+import by.zapolski.english.learning.domain.Word;
+import by.zapolski.english.learning.domain.enums.LearningStatus;
 import by.zapolski.english.learning.domain.enums.StorageType;
-import by.zapolski.english.repository.learning.*;
+import by.zapolski.english.repository.learning.ContextRepository;
+import by.zapolski.english.repository.learning.LanguageRepository;
+import by.zapolski.english.repository.learning.PhraseRepository;
+import by.zapolski.english.repository.learning.ResourceRepository;
+import by.zapolski.english.repository.learning.RuleRepository;
+import by.zapolski.english.repository.learning.TranslationRepository;
+import by.zapolski.english.repository.learning.WordRepository;
 import by.zapolski.english.service.learning.api.DbService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -23,6 +36,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
@@ -134,6 +149,10 @@ public class DbServiceImpl implements DbService {
                         phraseWithTranslationDto.getPhraseValue(),
                         phraseWithTranslationDto.getPhraseRank()
                 );
+                currentPhrase.setVerifyDate(phraseWithTranslationDto.getVerifyDate());
+                currentPhrase.setLastSuccessViewDate(phraseWithTranslationDto.getLastSuccessViewDate());
+                currentPhrase.setSuccessViewsCount(phraseWithTranslationDto.getSuccessViewsCount());
+                currentPhrase.setLearningStatus(LearningStatus.getByName(phraseWithTranslationDto.getLearningStatus()));
 
                 Word currentWord = words.stream()
                         .filter(w -> w.getValue().equals(phraseWithTranslationDto.getWordValue()))
@@ -206,6 +225,10 @@ public class DbServiceImpl implements DbService {
             row.createCell(10).setCellValue("ResourceChecksum");
             row.createCell(11).setCellValue("ResourceDuration");
             row.createCell(12).setCellValue("Rules");
+            row.createCell(13).setCellValue("VerifyDate");
+            row.createCell(14).setCellValue("LastSuccessViewDate");
+            row.createCell(15).setCellValue("SuccessViewsCount");
+            row.createCell(16).setCellValue("LearningStatus");
 
             rowNum = sheet.getLastRowNum() + 1;
             for (Phrase phrase : phrases) {
@@ -225,10 +248,15 @@ public class DbServiceImpl implements DbService {
                 row.createCell(10).setCellValue(phrase.getResource().getChecksum()); // ResourceChecksum
                 row.createCell(11).setCellValue(phrase.getResource().getDuration()); // ResourceDuration
                 row.createCell(12).setCellValue(""); // Rules
+
+                row.createCell(13).setCellValue(phrase.getVerifyDate());// VerifyDate
+                row.createCell(14).setCellValue(phrase.getLastSuccessViewDate());// LastSuccessViewDate
+                row.createCell(15).setCellValue(ofNullable(phrase.getSuccessViewsCount()).orElse(0));// SuccessViewsCount
+                row.createCell(16).setCellValue(ofNullable(phrase.getLearningStatus()).map(Enum::name).orElse("NEW"));// LearningStatus
             }
 
             log.debug("Writing file on disk, destination file: [{}]", BACKUP_FILE);
-            try (FileOutputStream out = new FileOutputStream(new File(BACKUP_FILE))) {
+            try (FileOutputStream out = new FileOutputStream(BACKUP_FILE)) {
                 workbook.write(out);
             }
         } catch (IOException e) {
@@ -269,6 +297,11 @@ public class DbServiceImpl implements DbService {
         } else {
             result.setRules(Arrays.asList(rulesStr.split(";")));
         }
+
+        result.setVerifyDate(row.getCell(13) != null ? row.getCell(13).getLocalDateTimeCellValue() : null);
+        result.setLastSuccessViewDate(row.getCell(14) != null ? row.getCell(14).getLocalDateTimeCellValue() : null);
+        result.setSuccessViewsCount(row.getCell(15) != null ? (int) row.getCell(15).getNumericCellValue() : 0);
+        result.setLearningStatus(row.getCell(16) != null ? row.getCell(16).getStringCellValue() : "");
 
         return result;
     }

@@ -2,6 +2,7 @@ package by.zapolski.english.service.learning.core.loader;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class PhraseWithTranslationDto {
 
     private String translationValue;
     private String translationLanguageValue;
+
+    private LocalDateTime verifyDate;
+    private LocalDateTime lastSuccessViewDate;
+    private Integer successViewsCount;
+    private String learningStatus;
 
     private List<String> rules = new ArrayList<>();
 }

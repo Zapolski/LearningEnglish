@@ -98,7 +98,7 @@
                 <tbody data-bind="foreach: records">
                     <tr data-bind="visible: $data.visible()">
                         <td class="center">
-                            <span data-bind="text: '№:' + ($index()+1)"></span><br>
+                            <span data-bind="text: '№:' + ($index()+1) + ' [' + $data.successViewsCount() + ']'"></span><br>
                             <input data-bind="event: {change: $parent.showQuestionCheckboxChange}" class="show_question"
                                 type="checkbox"><br>
                             <span data-bind="text: 'Id:' + $data.id()"></span><br>
@@ -138,10 +138,18 @@
                                 <input data-bind="value: $parent.newEnglish" type="text" class='input-field'><br>
                                 <label>Context</label>
                                 <input data-bind="value: $parent.newContext" type="text" class='input-field'><br>
-                                <div style="display:flex;align-items: center;align-items: center;">
-                                    <label>Rank</label>
-                                    <input data-bind="value: $parent.newRank" type="text" class='input-field'><br>
-                                </div>                                
+                                <label>Rank</label>
+                                <input data-bind="value: $parent.newRank" type="text" class='input-field'><br>
+                                <label>Learning status</label>
+                                <input data-bind="value: $parent.newLearningStatus" type="text" list="learningStatusesList">
+                                <input data-bind="click: $parent.clearLearningStatusButtonClick" type="button" value="X">
+                                <input data-bind="click: $parent.newLearningStatusButtonClick" type="button" value="NEW">
+                                <input data-bind="click: $parent.activeLearningStatusButtonClick" type="button" value="ACTIVE_LEARNING">
+                                <input data-bind="click: $parent.learnedStatusButtonClick" type="button" value="LEARNED"><br>
+                                <datalist id="learningStatusesList" data-bind="foreach: $parent.availableLearningStatuses()">
+                                    <option data-bind="value: $data"></option>
+                                </datalist>
+
                                 <button data-bind="click: $parent.updateRecord">Update record</button>
 
                                 <br><br>
@@ -212,6 +220,7 @@
             self.availableWords = ko.observableArray();
 
             self.availableLanguages = ko.observableArray();
+            self.availableLearningStatuses = ko.observableArray();
             self.languageString = ko.observable("loading...");
 
             self.setWords = ko.observable("");
@@ -221,9 +230,9 @@
             self.totalDuration = ko.observable("00:00:00.000");
             
             self.minRank = ko.observable("0");
-            self.maxRank = ko.observable("7000");
+            self.maxRank = ko.observable("100000");
 
-            self.randomCount = ko.observable("10");
+            self.randomCount = ko.observable("35");
 
             self.isShuffle = false;
             self.isUseCaseSensitiveSearch = false;
@@ -235,6 +244,7 @@
             self.newEnglish = ko.observable("");
             self.newContext = ko.observable("");
             self.newRank = ko.observable("");
+            self.newLearningStatus = ko.observable("");
             self.newSoundPath = ko.observable("");
             self.radioSelectedOptionValue = ko.observable("0");
 
@@ -295,7 +305,9 @@
                                     mode: "",
                                     currentAnswer: "",
                                     visible: true,
-                                    modified: element.modified
+                                    modified: element.modified,
+                                    successViewsCount: element.successViewsCount,
+                                    learningStatus: element.learningStatus
                                 });
                                 array.push(rec);
                             });
@@ -325,6 +337,26 @@
             // очищает слово в "Word from DB"
             self.clearButtonClick = function () {
                 self.searchWord("");
+            }
+
+            // установка статуса в ""
+            self.clearLearningStatusButtonClick = function () {
+                self.newLearningStatus("");
+            }
+
+            // установка статуса в NEW
+            self.newLearningStatusButtonClick = function () {
+                self.newLearningStatus("NEW");
+            }
+
+            // установка статуса в ACTIVE_LEARNING
+            self.activeLearningStatusButtonClick = function () {
+                self.newLearningStatus("ACTIVE_LEARNING");
+            }
+
+            // установка статуса в LEARNED
+            self.learnedStatusButtonClick = function () {
+                self.newLearningStatus("LEARNED");
             }
 
             // очищает "Text query"
@@ -365,7 +397,9 @@
                                 mode: "",
                                 currentAnswer: "",
                                 visible: true,
-                                modified: element.modified
+                                modified: element.modified,
+                                successViewsCount: element.successViewsCount,
+                                learningStatus: element.learningStatus
                             });
                             array.push(rec);
                         });
@@ -423,6 +457,11 @@
                 });
             }
 
+            // загрузка всех доступных статусов изучения
+            self.loadAllAvailableLearningStatuses = function () {
+                self.availableLearningStatuses(["NEW", "ACTIVE_LEARNING","LEARNED"]);
+            }
+
             // загружает фразы-примеры по клику на кнопку "Load word" в зависимости от настроенного фильтра
             self.loadRecordByWord = function () {
                 self.setWords(self.setWords().replace(/ \[.*\]/g, ""));
@@ -457,7 +496,9 @@
                                 mode: "",
                                 currentAnswer: "",
                                 visible: true,
-                                modified: element.modified                                
+                                modified: element.modified,
+                                successViewsCount: element.successViewsCount,
+                                learningStatus: element.learningStatus
                             });
                             array.push(rec);
                         });
@@ -494,6 +535,7 @@
                 self.newWord(record.word());
                 self.newContext(record.context());
                 self.newRank(record.rank());
+                self.newLearningStatus(record.learningStatus());
                 self.newSoundPath(record.soundPath());
 
                 $.ajax("http://localhost:8070/sentences/info", {
@@ -526,7 +568,8 @@
                     '","english":"' + self.newEnglish().replaceAll("\"", "\\\"") + //экранируем кавычки
                     '","context":"' + self.newContext() +
                     '","rank":"' + self.newRank() +
-                    '","language":"' + self.languageString() +                    
+                    '","language":"' + self.languageString() +
+                    '","learningStatus":"' + self.newLearningStatus() +
                     '"}';
                 console.log(dataJson);
                 $.ajax("http://localhost:8070/phrases/update/" + self.newId(), {
@@ -536,12 +579,14 @@
                     success: function (allData) {
                         alert("Record was successful updated");
                         var json = ko.toJSON(allData);
-                        var response = JSON.parse(json);                        
+                        var response = JSON.parse(json);
                         record.mode("");
                         record.translation(response.translations[0].value);
                         record.english(response.value);
                         record.context(response.context.value);
                         record.rank(response.rank);
+                        record.learningStatus(response.learningStatus);
+                        record.successViewsCount(response.successViewsCount);
                         record.modified(response.modified);
                     }
                 });
@@ -582,6 +627,15 @@
                         checkDiv.innerHTML = checkTranslate(actualVal, currentVal);
                     } else {
                         $this.addClass('correct');
+
+                        $.ajax("http://localhost:8070/phrases/update/view/" + record.id(), {
+                            type: "put",
+                            success: function (allData) {
+                                var json = ko.toJSON(allData);
+                                var response = JSON.parse(json);
+                                record.successViewsCount(response.successViewsCount);
+                            }
+                        });
                         checkDiv.innerHTML = '';
                     }
                 }
@@ -723,6 +777,7 @@
             // init events
             self.loadAllAvailableWord();
             self.loadAllAvailableLanguages();
+            self.loadAllAvailableLearningStatuses();
         };
 
         var Phrase = function (data) {
@@ -737,7 +792,9 @@
             self.mode = ko.observable(data.mode);
             self.currentAnswer = ko.observable(data.currentAnswer);
             self.visible = ko.observable(data.visible);
-            self.modified = ko.observable(data.modified);            
+            self.modified = ko.observable(data.modified);
+            self.successViewsCount = ko.observable(data.successViewsCount);
+            self.learningStatus = ko.observable(data.learningStatus);
         };
         ko.options.useOnlyNativeEvents = true;
         ko.applyBindings(new PhrasesViewModel());

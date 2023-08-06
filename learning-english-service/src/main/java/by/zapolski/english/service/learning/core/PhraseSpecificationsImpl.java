@@ -27,11 +27,9 @@ public class PhraseSpecificationsImpl implements PhraseSpecifications {
                 .and(likeSpec(search.getTextQuery(), Phrase_.value));
     }
 
-    private static <T> Specification<T> likeSpec(List<String> value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
-        return Specification.where(spec(value, (root, query, cb) -> cb.or(value.stream()
-                .map(val ->
-                        cb.like(path(root, attribute, attributes), "%" + val + "%"))
-                .toArray(Predicate[]::new))));
+    private static <T> Specification<T> likeSpec(String value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        return Specification.where(spec(value, (root, query, cb) -> cb.or(
+                        cb.like(path(root, attribute, attributes), "%" + value + "%"))));
     }
 
     private static Specification<Phrase> languageSpec(PhraseSearchDto search) {

@@ -1,5 +1,6 @@
 package by.zapolski.english.learning.dto;
 
+import by.zapolski.english.learning.domain.enums.LearningStatus;
 import lombok.Data;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public class PhraseDto {
     private String value;
     private Integer rank;
     private boolean isModified;
+    private Integer successViewsCount;
+    private LearningStatus learningStatus;
 }

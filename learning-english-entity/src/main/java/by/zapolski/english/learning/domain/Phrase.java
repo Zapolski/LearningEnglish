@@ -1,13 +1,32 @@
 package by.zapolski.english.learning.domain;
 
+import by.zapolski.english.learning.domain.enums.LearningStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +124,29 @@ public class Phrase implements Serializable {
      */
     @Column(nullable = false)
     private Integer rank;
+
+    /**
+     * Дата верификации фразы, т.е. проверки и корректировки перевода
+     */
+    private LocalDateTime verifyDate;
+
+    /**
+     * Дата последнего успешного просмотра, т.е. когда пользователь
+     * ввёл корректно перервод
+     */
+    private LocalDateTime lastSuccessViewDate;
+
+    /**
+     * Количество успешных просмотров, т.е. сколько раз пользователь
+     * ввёл корректно перевод
+     */
+    private Integer successViewsCount;
+
+    /**
+     * Статус изучения фразы
+     */
+    @Enumerated(EnumType.STRING)
+    private LearningStatus learningStatus;
 
     public Phrase(String value, Integer rank) {
         this.value = value;
