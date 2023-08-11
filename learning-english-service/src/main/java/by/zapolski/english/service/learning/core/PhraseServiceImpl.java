@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> implements PhraseService {
 
-    private static final float ACTIVE_PERCENT = .3f;
+    private static final float ACTIVE_PERCENT = .5f;
     private final PhraseMapper phraseMapper = Mappers.getMapper(PhraseMapper.class);
 
     private final PhraseRepository phraseRepository;

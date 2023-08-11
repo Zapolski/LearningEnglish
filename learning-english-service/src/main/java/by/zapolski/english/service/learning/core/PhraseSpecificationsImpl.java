@@ -24,6 +24,7 @@ public class PhraseSpecificationsImpl implements PhraseSpecifications {
                 .and(greaterOrEqualSpec(search.getMinRank(), Phrase_.rank))
                 .and(lessOrEqualSpec(search.getMaxRank(), Phrase_.rank)))
                 .and(languageSpec(search))
+                .and(spec(search.getLearningStatus(), Phrase_.learningStatus))
                 .and(likeSpec(search.getTextQuery(), Phrase_.value));
     }
 

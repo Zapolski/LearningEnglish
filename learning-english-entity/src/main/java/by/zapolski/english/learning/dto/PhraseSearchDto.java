@@ -1,5 +1,6 @@
 package by.zapolski.english.learning.dto;
 
+import by.zapolski.english.learning.domain.enums.LearningStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,17 +41,17 @@ public class PhraseSearchDto {
     String word;
 
     /**
-     * Список слов
-     */
-    List<String> words;
-
-    /**
      * Список рангов
      */
     List<Integer> ranks;
 
     /**
-     * Список текстовых запросов.
+     * Текстовый запрос (для SQL like).
      */
     String textQuery;
+
+    /**
+     * Статус изучения фразы.
+     */
+    LearningStatus learningStatus;
 }

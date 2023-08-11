@@ -16,14 +16,13 @@
 
     <div class="sidenav">
         <span>Set ranks:</span>
-        <textarea id="set-text-area" class="set-text-area" data-bind="textInput: setWords" rows="15"
+        <textarea id="set-text-area" class="set-text-area" data-bind="textInput: setRanks" rows="15"
             cols="25"></textarea>
         <div class="set-controls">
             <input id="file-input" type="file" data-bind="event: {change: fileInputChange}">
             <input id="file-button" data-bind="click: fileButtonClick" type="button" value="Load file">
             <input id="save-file-button" data-bind="click: saveFileButtonClick" type="button" value="Save file"><br><br>
             <input data-bind="click: clearSetClick" type="button" value="Clear">
-            <input data-bind="click: loadSet" type="button" value="Load set" hidden><br>
         </div>
     </div>
 
@@ -36,17 +35,17 @@
                 <input name="starter" type="button" value="Play/Pause" onclick="startstop()">
             </form>
 
-            <br><br>
+            <br>
             <h2 class="center">Training English phrases with native speakers</h2>
 
-            <div class="center">
-                <label>Available languages for translation: </label>
-                <input id="languageInput" data-bind="value: languageString" type="text" list="languagesList">
-                <datalist id="languagesList" data-bind="foreach: availableLanguages">
-                    <option data-bind="value: $data"></option>
-                </datalist>
-            </div>
-            <br>
+<!--            <div class="center">-->
+<!--                <label>Available languages for translation: </label>-->
+<!--                <input id="languageInput" data-bind="value: languageString" type="text" list="languagesList">-->
+<!--                <datalist id="languagesList" data-bind="foreach: availableLanguages">-->
+<!--                    <option data-bind="value: $data"></option>-->
+<!--                </datalist>-->
+<!--            </div>-->
+<!--            <br>-->
 
             <form class="center" data-bind="submit: loadRecordByWord">
                 <label>Word from DB: </label>
@@ -54,45 +53,40 @@
                 <datalist id="wordList" data-bind="foreach: availableWords">
                     <option data-bind="value: $data"></option>
                 </datalist>
-                <input data-bind="click: clearButtonClick" type="button" value="Clear">
-                <input type="submit" value="Load word">
-                <input data-bind="click: addWordToSet" type="button" value="Add to set">
+                <input data-bind="click: clearButtonClick" type="button" value="X">
 
                 <br>
                 <label>Text query: </label>                
                 <input id="textQuery" data-bind="value: textQuery" type="text">
-                <input data-bind="click: clearTextQueryButtonClick" type="button" value="Clear">
+                <input data-bind="click: clearTextQueryButtonClick" type="button" value="X">
                 <br>
-                <label><input name="searchType" type="radio" value="0"
-                        data-bind="checked: radioSelectedOptionValue" />use
-                    search with database references</label>
-                <label><input name="searchType" type="radio" value="1"
-                        data-bind="checked: radioSelectedOptionValue" />use
-                    full search by sentences</label>
-                <br>
-                <label data-bind="visible: radioSelectedOptionValue() == 1"><input type="checkbox"
-                        data-bind="checked: isUseCaseSensitiveSearch, visible: radioSelectedOptionValue() == 1" />case
-                    sensitive</label>
-                <label><input type="checkbox" data-bind="checked: isShuffle" />shuffle</label>
+
+                <label>Learning status: </label>
+                <input data-bind="value: learningStatusString" type="text" list="learningStatusesListSearch">
+                <datalist id="learningStatusesListSearch" data-bind="foreach: availableLearningStatuses">
+                    <option data-bind="value: $data"></option>
+                </datalist>
+                <input data-bind="click: learningStatusesListSearchClearButtonClick" type="button" value="X">
                 <br>
                 <label>Min rank: </label>
                 <input id="minRank" data-bind="value: minRank, event: {change: minRankInput}" type="number">
                 <label>Max rank: </label>
                 <input id="maxRank" data-bind="value: maxRank" type="number">
                 <input data-bind="click: defaultRanksButtonClick" type="button" value="Default ranks">
-
                 <br>
                 <input id="randomCount" data-bind="value: randomCount" type="number">
                 <input data-bind="click: loadRandomSentences" type="button" value="Load random sentences">
-
-                <br><br>
-                <span>Available examples: </span>
-                <span data-bind="text: getCountVisiblePhrases()"></span>
                 <br>
-                <span>Total duration: </span>
-                <span data-bind="text: totalDuration()"></span>                
-            </form><br><br>
+                <label><input type="checkbox" data-bind="checked: isShuffle" />shuffle</label>
+                <input type="submit" value="Load phrases">
+            </form><br>
 
+            <span>Available examples: </span>
+            <span data-bind="text: getCountVisiblePhrases()"></span>
+            <br>
+            <span>Total duration: </span>
+            <span data-bind="text: totalDuration()"></span>
+            <br>
 
             <table class="table-sentences">
                 <tbody data-bind="foreach: records">
@@ -142,13 +136,13 @@
                                 <input data-bind="value: $parent.newRank" type="text" class='input-field'><br>
                                 <label>Learning status</label>
                                 <input data-bind="value: $parent.newLearningStatus" type="text" list="learningStatusesList">
+                                <datalist id="learningStatusesList" data-bind="foreach: $parent.availableLearningStatuses()">
+                                    <option data-bind="value: $data"></option>
+                                </datalist>
                                 <input data-bind="click: $parent.clearLearningStatusButtonClick" type="button" value="X">
                                 <input data-bind="click: $parent.newLearningStatusButtonClick" type="button" value="NEW">
                                 <input data-bind="click: $parent.activeLearningStatusButtonClick" type="button" value="ACTIVE_LEARNING">
                                 <input data-bind="click: $parent.learnedStatusButtonClick" type="button" value="LEARNED"><br>
-                                <datalist id="learningStatusesList" data-bind="foreach: $parent.availableLearningStatuses()">
-                                    <option data-bind="value: $data"></option>
-                                </datalist>
 
                                 <button data-bind="click: $parent.updateRecord">Update record</button>
 
@@ -222,8 +216,9 @@
             self.availableLanguages = ko.observableArray();
             self.availableLearningStatuses = ko.observableArray();
             self.languageString = ko.observable("loading...");
+            self.learningStatusString = ko.observable("");
 
-            self.setWords = ko.observable("");
+            self.setRanks = ko.observable("");
             self.textQuery = ko.observable("");
             self.searchWord = ko.observable("loading words from DB...");
 
@@ -232,10 +227,9 @@
             self.minRank = ko.observable("0");
             self.maxRank = ko.observable("100000");
 
-            self.randomCount = ko.observable("35");
+            self.randomCount = ko.observable("36");
 
             self.isShuffle = false;
-            self.isUseCaseSensitiveSearch = false;
 
             // for edit mode
             self.newId = ko.observable("");
@@ -246,7 +240,6 @@
             self.newRank = ko.observable("");
             self.newLearningStatus = ko.observable("");
             self.newSoundPath = ko.observable("");
-            self.radioSelectedOptionValue = ko.observable("0");
 
             // for info mode
             self.tokens = ko.observableArray([]);
@@ -254,89 +247,14 @@
             self.lemmas = ko.observableArray([]);
             self.ranks = ko.observableArray([]);
 
-            // загружает фразы-примеры по клику на кнопку "Load set" в зависимости от настроенного фильтра
-            self.loadSet = function () {
-                self.setWords(self.setWords().replace(/ \[.*\]/g, ""));
-                let words = self.setWords().split('\n');
-                self.records([]);
-                words.forEach(element => {
-                    if (element === "") {
-                        return;
-                    }
-
-                    let url = "";
-                    if (self.radioSelectedOptionValue() === "1") {
-                        // use full search by sentences (radioSelectedOptionValue=1)
-                        url = "http://localhost:8080/records/query/" + element.toLowerCase();
-                        if (self.isUseCaseSensitiveSearch) {
-                            url = url + "/0";
-                        } else {
-                            url = url + "/1";
-                        }
-                    } else {
-                        //use search with database references (radioSelectedOptionValue=0)
-                        url = "http://localhost:8080/records/" + element.toLowerCase();
-                    }
-                    url = url + "?minRank=" + self.minRank() + "&maxRank=" + self.maxRank();
-
-                    $.ajax(url, {
-                        type: "GET",
-                        success: function (allData) {
-                            var json = ko.toJSON(allData);
-                            var recordsFromServer = JSON.parse(json);
-                            var array = [];
-                            self.setWords(self.setWords().replace(new RegExp("^" + element + "$", "gm"), element.replace(/\r/g, "")
-                                + " [" + recordsFromServer.length + "]"))
-                            if (recordsFromServer.length === 0) {
-                                console.log("Empty set for " + element);
-                                return;
-                            } else {
-                                console.log("Process: [" + element + "] - " + recordsFromServer.length)
-                            }
-                            recordsFromServer.forEach(element => {
-                                var rec = new Phrase({
-                                    id: element.id,
-                                    word: element.word,
-                                    translation: element.translation,
-                                    english: element.english,
-                                    context: element.context,
-                                    rank: element.rank,
-                                    soundPath: element.soundPath,
-                                    mode: "",
-                                    currentAnswer: "",
-                                    visible: true,
-                                    modified: element.modified,
-                                    successViewsCount: element.successViewsCount,
-                                    learningStatus: element.learningStatus
-                                });
-                                array.push(rec);
-                            });
-                            Array.prototype.push.apply(array, self.records());
-                            if (self.isShuffle) {
-                                array = shuffle(array);
-                            }
-                            self.records(array);
-                            self.splitByWords();
-                        }
-                    });
-                });
-            }
-
-            // добавляет выбранносе слово из "Word from DB" в список на левой панели
-            self.addWordToSet = function () {
-                var currentSet = self.setWords();
-                if (self.searchWord() != "") {
-                    if (currentSet != "") {
-                        currentSet = currentSet + '\n';
-                    }
-                    currentSet = currentSet + self.searchWord();
-                    self.setWords(currentSet);
-                }
-            }
-
             // очищает слово в "Word from DB"
             self.clearButtonClick = function () {
                 self.searchWord("");
+            }
+
+            // установка статуса в "" на форме поиска
+            self.learningStatusesListSearchClearButtonClick = function () {
+                self.learningStatusString("");
             }
 
             // установка статуса в ""
@@ -373,7 +291,7 @@
             // загружает случайное количество фраз
             self.loadRandomSentences = function () {
                 let url = "http://localhost:8070/phrases/random?";
-                url = url + (self.randomCount() != "" ? "count=" + self.randomCount() : "");
+                url = url + (self.randomCount() !== "" ? "count=" + self.randomCount() : "10");
 
                 $.ajax(url, {
                     type: "GET",
@@ -415,7 +333,7 @@
 
             // очищает набор слов в "Set words"
             self.clearSetClick = function () {
-                self.setWords("");
+                self.setRanks("");
             }
 
             // дублирует набор из minRank в maxRank для удобства поиска по одному рангу
@@ -464,15 +382,16 @@
 
             // загружает фразы-примеры по клику на кнопку "Load word" в зависимости от настроенного фильтра
             self.loadRecordByWord = function () {
-                self.setWords(self.setWords().replace(/ \[.*\]/g, ""));
-                let searchRanks = self.setWords().split('\n').join();
+                self.setRanks(self.setRanks().replace(/ \[.*\]/g, ""));
+                let searchRanks = self.setRanks().split('\n').join();
                 let url = "http://localhost:8070/phrases/search?";
-                url = url + (self.minRank() != "" ? "minRank=" + self.minRank() : "") + 
-                            (self.maxRank() != "" ? "&maxRank=" + self.maxRank() : "") + 
-                            (self.languageString() !="" ? "&language=" + self.languageString() : "") +
-                            (self.searchWord() != "" ? "&word=" + self.searchWord().toLowerCase() : "") +
-                            (self.textQuery() != "" ? "&textQuery=" + self.textQuery() : "") +
-                            (searchRanks != "" ? "&ranks=" + searchRanks : "");
+                url = url + (self.minRank() !== "" ? "minRank=" + self.minRank() : "") +
+                            (self.maxRank() !== "" ? "&maxRank=" + self.maxRank() : "") +
+                            (self.languageString() !=="" ? "&language=" + self.languageString() : "") +
+                            (self.searchWord() !== "" ? "&word=" + self.searchWord().toLowerCase() : "") +
+                            (self.textQuery() !== "" ? "&textQuery=" + self.textQuery() : "") +
+                            (searchRanks !== "" ? "&ranks=" + searchRanks : "") +
+                            (self.learningStatusString !== "" ? "&learningStatus=" + self.learningStatusString() : "");
 
                 $.ajax(url, {
                     type: "GET",
@@ -698,7 +617,7 @@
                 var http = new XMLHttpRequest();
                 http.open('HEAD', url, false);
                 http.send();
-                return http.status == 200;
+                return http.status === 200;
             }
 
             self.wooordhuntRequest = function (english) {
@@ -723,7 +642,7 @@
 
             self.saveFileButtonClick = function () {
                 console.log("saveFileButtonClick");
-                var textToSave = self.setWords(),
+                var textToSave = self.setRanks(),
                     textToSaveAsBlob = new Blob([textToSave], { type: "text/plain" }),
                     textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob),
                     fileNameToSaveAs = "set",
@@ -749,7 +668,7 @@
                 console.log("file-input change");
                 ko.utils.arrayForEach(evt.target.files, function (file) {
                     console.log(file.name);
-                    if (file.type == 'text/plain') {
+                    if (file.type === 'text/plain') {
                         // Создаём новый FileReader, который и будет читать наш файл
                         var reader = new FileReader();
 
@@ -757,7 +676,7 @@
                         reader.onloadend = function (event) {
                             let text = event.target.result;
                             console.log(text);
-                            self.setWords(text);
+                            self.setRanks(text);
                             evt.target.value = "";
                         };
 
