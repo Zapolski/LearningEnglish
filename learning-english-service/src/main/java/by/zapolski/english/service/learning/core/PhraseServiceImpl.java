@@ -5,11 +5,13 @@ import by.zapolski.english.learning.domain.Phrase;
 import by.zapolski.english.learning.domain.Phrase_;
 import by.zapolski.english.learning.domain.Translation;
 import by.zapolski.english.learning.domain.enums.LearningStatus;
+import by.zapolski.english.learning.dto.CountDto;
 import by.zapolski.english.learning.dto.PagePhraseDto;
 import by.zapolski.english.learning.dto.PhraseDto;
 import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.learning.mapper.PhraseMapper;
 import by.zapolski.english.lemma.dto.PhraseUpdateDto;
+import by.zapolski.english.repository.dto.IdProjection;
 import by.zapolski.english.repository.learning.ContextRepository;
 import by.zapolski.english.repository.learning.PhraseRepository;
 import by.zapolski.english.service.CrudBaseServiceImpl;
@@ -76,21 +78,13 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
         Specification<Phrase> specification = phraseSpecifications.getSpecification(searchDto);
         List<Phrase> result = phraseRepository.findAll(specification, Sort.by(Sort.Direction.ASC, Phrase_.RANK, Phrase_.ID));
 
-        return new PagePhraseDto(
-                getPhraseDtos(result),
-                result.size(),
-                getTotalDuration(result)
-        );
+        return getPagePhraseDto(result);
     }
 
     @Override
     public PagePhraseDto getByPattern(String query, Integer minRank, Integer maxRank) {
         List<Phrase> result = phraseRepository.getByPattern(query, minRank, maxRank);
-        return new PagePhraseDto(
-                getPhraseDtos(result),
-                result.size(),
-                getTotalDuration(result)
-        );
+        return getPagePhraseDto(result);
     }
 
     @Override
@@ -104,11 +98,13 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
         List<Phrase> result = phraseRepository.getRandomCount(activeCount, LearningStatus.ACTIVE_LEARNING.name());
         result.addAll(phraseRepository.getRandomCount(newCount, LearningStatus.NEW.name()));
         Collections.shuffle(result);
-        return new PagePhraseDto(
-                getPhraseDtos(result),
-                result.size(),
-                getTotalDuration(result)
-        );
+        return getPagePhraseDto(result);
+    }
+
+    @Override
+    public PagePhraseDto getNotViewedRandomCountBetweenRanks(Integer minRank, Integer maxRank, Integer limit) {
+        List<Phrase> result = phraseRepository.getNotViewedRandomCountBetweenRanks(minRank, maxRank, limit);
+        return getPagePhraseDto(result);
     }
 
     @Override
@@ -132,6 +128,31 @@ public class PhraseServiceImpl extends CrudBaseServiceImpl<Phrase, Long> impleme
             phrase.setSuccessViewsCount(phrase.getSuccessViewsCount() + 1);
         }
         return phraseRepository.saveAndFlush(phrase);
+    }
+
+    @Override
+    public PagePhraseDto getRandomNotViewedPhrasesGroupByRanksWithLimit(Integer minRank, Integer maxRank, Integer limit) {
+        List<Long> ids = phraseRepository.getRandomNotViewedPhrasesGroupByRanksWithLimit(minRank, maxRank, limit)
+                .stream()
+                .map(IdProjection::getId)
+                .collect(Collectors.toList());
+        var result = phraseRepository.getByIdIn(ids);
+        return getPagePhraseDto(result);
+    }
+
+    @Override
+    public CountDto getCountsBetweenRanks(Integer minRank, Integer maxRank) {
+        return new CountDto()
+                .setNotViewedCount(phraseRepository.getNotViewedCountBetweenRanks(minRank, maxRank))
+                .setViewedCount(phraseRepository.getViewedCountBetweenRanks(minRank, maxRank));
+    }
+
+    private PagePhraseDto getPagePhraseDto(List<Phrase> result) {
+        return new PagePhraseDto(
+                getPhraseDtos(result),
+                result.size(),
+                getTotalDuration(result)
+        );
     }
 
     private List<PhraseDto> getPhraseDtos(List<Phrase> result) {

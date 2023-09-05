@@ -76,6 +76,7 @@
                 <br>
                 <input id="randomCount" data-bind="value: randomCount" type="number">
                 <input data-bind="click: loadRandomSentences" type="button" value="Load random sentences">
+                <span data-bind="text: 'viewed:' + viewedCount() + '; not viewed:' + notViewedCount()"></span>
                 <br>
                 <label><input type="checkbox" data-bind="checked: isShuffle" />shuffle</label>
                 <input type="submit" value="Load phrases">
@@ -224,10 +225,13 @@
 
             self.totalDuration = ko.observable("00:00:00.000");
             
-            self.minRank = ko.observable("0");
-            self.maxRank = ko.observable("100000");
+            self.minRank = ko.observable("1");
+            self.maxRank = ko.observable("1000");
 
-            self.randomCount = ko.observable("36");
+            self.randomCount = ko.observable("60");
+
+            self.notViewedCount = ko.observable("n/a");
+            self.viewedCount = ko.observable("n/a");
 
             self.isShuffle = false;
 
@@ -291,7 +295,9 @@
             // загружает случайное количество фраз
             self.loadRandomSentences = function () {
                 let url = "http://localhost:8070/phrases/random?";
-                url = url + (self.randomCount() !== "" ? "count=" + self.randomCount() : "10");
+                url = url + (self.randomCount() !== "" ? "limit=" + self.randomCount() : "10") +
+                            (self.minRank() !== "" ? "&minRank=" + self.minRank() : "") +
+                            (self.maxRank() !== "" ? "&maxRank=" + self.maxRank() : "");
 
                 $.ajax(url, {
                     type: "GET",
@@ -327,6 +333,19 @@
                         }
                         console.log(array);
                         self.records(array);
+                    }
+                });
+
+                url = "http://localhost:8070/phrases/counts?" +
+                    (self.minRank() !== "" ? "minRank=" + self.minRank() : "0") +
+                    (self.maxRank() !== "" ? "&maxRank=" + self.maxRank() : "2147483647");
+                $.ajax(url, {
+                    type: "GET",
+                    success: function (allData) {
+                        var json = ko.toJSON(allData);
+                        var data = JSON.parse(json);
+                        self.viewedCount(data.viewedCount);
+                        self.notViewedCount(data.notViewedCount)
                     }
                 });
             };
@@ -515,21 +534,13 @@
             self.inputFiledKeyUp = function (record, event) {
                 var $this = $(event.target);
 
-                if ($this.hasClass('invalid')) {
-                    $this.removeClass('invalid')
-                }
-
-                if ($this.hasClass('correct')) {
-                    $this.removeClass('correct')
-                }
-
                 if (event.keyCode === 113) {
                     let checkbox = $this.closest('tr')[0].getElementsByClassName('show_question')[0];
                     $(checkbox).trigger('click');
                 }
 
                 if (event.keyCode === 13) {
-                    var actualVal = "";
+                    let actualVal = "";
                     tipColl = $this.closest('td')[0].getElementsByClassName('tip');
                     for (let i = 0; i < tipColl.length; i++) {
                         actualVal = actualVal + tipColl[i].innerHTML;
@@ -542,20 +553,23 @@
 
                     $this.closest('tr')[0].getElementsByClassName('music-button')[0].click();
                     if (currentVal !== actualVal) {
+                        $this.removeClass('correct')
                         $this.addClass('invalid');
                         checkDiv.innerHTML = checkTranslate(actualVal, currentVal);
                     } else {
-                        $this.addClass('correct');
-
-                        $.ajax("http://localhost:8070/phrases/update/view/" + record.id(), {
-                            type: "put",
-                            success: function (allData) {
-                                var json = ko.toJSON(allData);
-                                var response = JSON.parse(json);
-                                record.successViewsCount(response.successViewsCount);
-                            }
-                        });
-                        checkDiv.innerHTML = '';
+                        if (!$this.hasClass('correct')) {
+                            $this.removeClass('invalid')
+                            $this.addClass('correct');
+                            $.ajax("http://localhost:8070/phrases/update/view/" + record.id(), {
+                                type: "put",
+                                success: function (allData) {
+                                    var json = ko.toJSON(allData);
+                                    var response = JSON.parse(json);
+                                    record.successViewsCount(response.successViewsCount);
+                                }
+                            });
+                            checkDiv.innerHTML = '';
+                        }
                     }
                 }
 
@@ -575,8 +589,6 @@
                 var $this = $(event.target);
                 audioEl = $this.closest('td')[0].getElementsByTagName('audio')[0];
                 audioEl.playbackRate = $this.closest('td')[0].getElementsByClassName('speed')[0].value;
-                //audioEl.pause();
-                //audioEl.currentTime = 0;
                 audioEl.play();
             }
 

@@ -1,6 +1,11 @@
 package by.zapolski.english.service.learning.core;
 
-import by.zapolski.english.learning.domain.*;
+import by.zapolski.english.learning.domain.Language_;
+import by.zapolski.english.learning.domain.Phrase;
+import by.zapolski.english.learning.domain.Phrase_;
+import by.zapolski.english.learning.domain.Translation;
+import by.zapolski.english.learning.domain.Translation_;
+import by.zapolski.english.learning.domain.Word_;
 import by.zapolski.english.learning.dto.PhraseSearchDto;
 import by.zapolski.english.service.learning.api.PhraseSpecifications;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,24 +18,30 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class PhraseSpecificationsImpl implements PhraseSpecifications {
     @Override
     public Specification<Phrase> getSpecification(PhraseSearchDto search) {
-        return Objects.requireNonNull(Specification.<Phrase>where(spec(search.getWord(), Phrase_.word, Word_.value))
+        return Specification.<Phrase>where(spec(search.getWord(), Phrase_.word, Word_.value))
                 .and(spec(search.getRanks(), Phrase_.rank))
                 .and(greaterOrEqualSpec(search.getMinRank(), Phrase_.rank))
-                .and(lessOrEqualSpec(search.getMaxRank(), Phrase_.rank)))
+                .and(lessOrEqualSpec(search.getMaxRank(), Phrase_.rank))
                 .and(languageSpec(search))
                 .and(spec(search.getLearningStatus(), Phrase_.learningStatus))
-                .and(likeSpec(search.getTextQuery(), Phrase_.value));
+                .and(likeSpec(search.getTextQueries(), Phrase_.value));
     }
 
     private static <T> Specification<T> likeSpec(String value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
         return Specification.where(spec(value, (root, query, cb) -> cb.or(
-                        cb.like(path(root, attribute, attributes), "%" + value + "%"))));
+                cb.like(path(root, attribute, attributes), "%" + value + "%"))));
+    }
+
+    private static <T> Specification<T> likeSpec(List<String> value, SingularAttribute<?, ?> attribute, SingularAttribute<?, ?>... attributes) {
+        return Specification.where(spec(value, (root, query, cb) -> cb.or(value.stream()
+                .map(val ->
+                        cb.like(path(root, attribute, attributes), "%" + val + "%"))
+                .toArray(Predicate[]::new))));
     }
 
     private static Specification<Phrase> languageSpec(PhraseSearchDto search) {

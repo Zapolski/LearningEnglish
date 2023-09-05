@@ -51,6 +51,11 @@ public class PhraseSearchDto {
     String textQuery;
 
     /**
+     * Текстовый запрос (для SQL like).
+     */
+    List<String> textQueries;
+
+    /**
      * Статус изучения фразы.
      */
     LearningStatus learningStatus;
