@@ -16,5 +16,5 @@ public interface DbService {
     /**
      * Резервная копия текущего состояния базы в Excel файл
      */
-    void backup();
+    byte[] backup();
 }

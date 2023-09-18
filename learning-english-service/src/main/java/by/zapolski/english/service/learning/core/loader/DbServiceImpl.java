@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -203,10 +203,9 @@ public class DbServiceImpl implements DbService {
 
     @Transactional
     @Override
-    public void backup() {
-        List<Phrase> phrases = phraseRepository.findAll();
-
+    public byte[] backup() {
         try (HSSFWorkbook workbook = new HSSFWorkbook()) {
+            List<Phrase> phrases = phraseRepository.findAll();
             log.debug("Creating xls-file in memory");
             HSSFSheet sheet = workbook.createSheet("From DB");
             int rowNum = 0;
@@ -255,12 +254,12 @@ public class DbServiceImpl implements DbService {
                 row.createCell(16).setCellValue(ofNullable(phrase.getLearningStatus()).map(Enum::name).orElse("NEW"));// LearningStatus
             }
 
-            log.debug("Writing file on disk, destination file: [{}]", BACKUP_FILE);
-            try (FileOutputStream out = new FileOutputStream(BACKUP_FILE)) {
-                workbook.write(out);
+            try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+                workbook.write(bos);
+                return bos.toByteArray();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
